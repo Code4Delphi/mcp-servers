@@ -1,5 +1,5 @@
 # 🗂️ FileSystem MCP Server – Code4Delphi
-Este projeto é um exemplo prático de um MCP Server criado com Delphi, que expõe funções de manipulação de arquivos e pastas por meio do Model Context Protocol (MCP).
+Este projeto é um exemplo prático de um MCP Server criado com Delphi, que expõe funcionalidades para manipulação de arquivos e pastas no sistema de arquivos.
 
 Ele permite que LLMs (como Claude, GPT, etc.) descubram e utilizem ferramentas relacionadas ao sistema de arquivos local, de forma padronizada e segura, servindo como uma ponte entre a IA e operações reais no sistema.
 
