@@ -1,8 +1,7 @@
 # MCP Servers
-MCP Servers for Delphi – Code4Delphi
 Este repositório reúne exemplos práticos e projetos prontos de MCP Servers criados com Delphi, seguindo a especificação oficial do Model Context Protocol (MCP).
 
-O MCP é um padrão criado pela Anthropic que permite que LLMs (Modelos de Linguagem) descubram e utilizem ferramentas externas de forma padronizada, como acesso a bancos de dados, leitura de arquivos e execução de APIs — tudo isso em tempo real e com baixo acoplamento.
+O MCP é um padrão criado pela Anthropic que permite que LLMs (Modelos de Linguagem) descubram e utilizem ferramentas externas de forma padronizada, como acesso a bancos de dados, leitura de arquivos e execução de APIs, tudo isso em tempo real e com baixo acoplamento.
 
 ## 🚀MCP com Delphi na prática
 Quer aprender a usar os milhares de MCP Servers e MCP Clients já disponíveis e, melhor ainda, criar os seus próprios de forma simples com Delphi?
