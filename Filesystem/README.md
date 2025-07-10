@@ -6,15 +6,15 @@ Ele permite que LLMs (como Claude, GPT, etc.) descubram e utilizem ferramentas r
 ## 🔧 Funcionalidades expostas via MCP
 Este servidor expõe as seguintes ferramentas (tools):
 
-ListFiles: Lista arquivos e pastas dentro do diretório raiz
+**ListFiles**: Lista arquivos e pastas dentro do diretório raiz
 
-ShowFileContents: Exibe o conteúdo de um arquivo de texto
+**ShowFileContents**: Exibe o conteúdo de um arquivo de texto
 
-FolderCreate: Cria uma nova pasta
+**FolderCreate**: Cria uma nova pasta
 
-FileCreate: Cria um novo arquivo com conteúdo
+**FileCreate**: Cria um novo arquivo com conteúdo
 
-RenameFileOrFolder: Renomeia arquivos ou pastas existentes
+**RenameFileOrFolder**: Renomeia arquivos ou pastas existentes
 
 
 ## 📁 Diretório raiz
