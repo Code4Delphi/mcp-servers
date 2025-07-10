@@ -6,33 +6,40 @@ Ele permite que LLMs (como Claude, GPT, etc.) descubram e utilizem ferramentas r
 ## 🔧 Funcionalidades expostas via MCP
 Este servidor expõe as seguintes ferramentas (tools):
 
-ListFiles — Lista arquivos e pastas dentro do diretório raiz
+ListFiles: Lista arquivos e pastas dentro do diretório raiz
 
-ShowFileContents — Exibe o conteúdo de um arquivo de texto
+ShowFileContents: Exibe o conteúdo de um arquivo de texto
 
-FolderCreate — Cria uma nova pasta
+FolderCreate: Cria uma nova pasta
 
-FileCreate — Cria um novo arquivo com conteúdo
+FileCreate: Cria um novo arquivo com conteúdo
 
-RenameFileOrFolder — Renomeia arquivos ou pastas existentes
+RenameFileOrFolder: Renomeia arquivos ou pastas existentes
 
-Todas as ferramentas são registradas dinamicamente via TTMSMCPTool e seguem o padrão esperado por qualquer MCP Client compatível.
 
 ## 📁 Diretório raiz
-O diretório de trabalho padrão é:
+O diretório de trabalho padrão é: C:\TempIA\
+Você pode alterar esse caminho informando um novo via parâmetro na linha de comando ao iniciar o servidor (parâmetro por linha de comando no atalho do .exe).
 
-makefile
-Copiar
-Editar
-C:\TempIA\
-Você pode alterar esse caminho informando um novo via parâmetro na linha de comando ao iniciar o servidor.
+## ▶️ Demonstração
+Vídeo de demonstração de uso: [FileSystem MCP Server Vídeo](https://www.youtube.com/watch?v=G7H9_hGQ3Q8&list=PLLHSz4dOnnN237tIxJI10E5cy1dgXJxgP)
 
-## ▶️ Como executar
-Compile o projeto Delphi que usa a unit FileSystem.pas.
+## ⚙️Acessando a partir do Claude Desktop
+- [Link para download do Claude Desktop](https://claude.ai/download)
+- Conteúdo a ser adicionado ao arquivo claude_desktop_config.json:
 
-Execute o binário gerado.
-
-O servidor MCP iniciará e aguardará conexões de qualquer MCP Client compatível.
+```
+{
+  "mcpServers": {
+    "FileSystem": {
+      "command": "C:/IA/mcp-servers/Filesystem/Bin/FileSystemMCP.exe",
+      "args": [
+        "C:/TempIA/"
+      ]
+    }
+  }
+}
+```
 
 ## 📞 Contatos
 [![Telegram](https://img.shields.io/badge/Telegram-Join-blue?logo=telegram)](https://t.me/Code4Delphi)
