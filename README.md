@@ -5,7 +5,8 @@ O MCP é um padrão criado pela Anthropic que permite que LLMs (Modelos de Lingu
 
 # MCP Servers
 - **[FileSystem](https://github.com/Code4Delphi/mcp-servers/tree/master/Filesystem)** - Expõe funcionalidades para manipulação de arquivos e pastas no sistema de arquivos.
-
+- **[ServerInfoPC](https://github.com/Code4Delphi/mcp-servers/tree/master/ServerInfoPC)** - Expõe informações sobre PC/Windows
+  
 ## 🚀MCP com Delphi na prática
 Quer aprender a usar os milhares de MCP Servers e MCP Clients já disponíveis e, melhor ainda, criar os seus próprios de forma simples com Delphi?
 
