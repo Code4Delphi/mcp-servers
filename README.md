@@ -12,10 +12,18 @@ Quer aprender a usar os milhares de MCP Servers e MCP Clients já disponíveis e
 
 No canal Code4Delphi, você encontra uma série de vídeos práticos que mostram, passo a passo, como implementar o Model Context Protocol em seus sistemas, conectando LLMs a dados reais e ferramentas externas com facilidade.
 
-## 🌟 MCP na prática
-▶️ [Vídeos práticos sobre MCP](https://www.youtube.com/watch?v=G7H9_hGQ3Q8&list=PLLHSz4dOnnN237tIxJI10E5cy1dgXJxgP)
+## 🔗 IA e MCP na prática
+- ▶️ [Vídeos práticos sobre MCP](https://www.youtube.com/watch?v=G7H9_hGQ3Q8&list=PLLHSz4dOnnN237tIxJI10E5cy1dgXJxgP)
 
-👉 [Repositório no Github exemplo práticos](https://github.com/Code4Delphi/ia-na-pratica)
+- 🗂️ [Repositório com exemplo de IA na Prática](https://github.com/Code4Delphi/ia-na-pratica)
+
+- 🗂️ [Repositório com **MCP Servers** criados com Delphi](https://github.com/Code4Delphi/mcp-servers)
+
+- 🗂️ [Repositório com **MCP Client** criado com Delphi](https://github.com/Code4Delphi/mcp-client)
+
+- 🌟 [Postagem sobre MCP Server e Client](https://code4delphi.com.br/blog/mcp/)
+
+- 🌟 [Postagem sobre IA na prática: IAs utilizadas](https://code4delphi.com.br/blog/ia-na-pratica-ias-utilizadas/)
 
 <br/>
 
