@@ -17,7 +17,7 @@ No canal Code4Delphi, você encontra uma série de vídeos práticos que mostram
 
 - 🗂️ [Repositório com exemplo de IA na Prática](https://github.com/Code4Delphi/ia-na-pratica)
 
-- 🗂️ [Repositório com **MCP Client** criado com Delphi](https://github.com/Code4Delphi/mcp-client)
+- 🗂️ [Repositório com MCP Client criado com Delphi](https://github.com/Code4Delphi/mcp-client)
 
 - 🌟 [Postagem sobre MCP Server e Client](https://code4delphi.com.br/blog/mcp/)
 
