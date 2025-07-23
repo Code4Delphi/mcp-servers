@@ -70,74 +70,71 @@ constructor TDatabaseServer.Create(const AParams: TConnectionParams);
 begin
   FParams := AParams;
 
-  // Initialize database connection
   FConnection := TFDConnection.Create(nil);
-
-  // Configure connection based on database type
   case FParams.DBType of
     TDBType.SQLite:
+    begin
+      FConnection.Params.DriverID := 'SQLite';
+      FConnection.Params.Database := FParams.Database;
+
+      // Create sample database if it doesn't exist and sample flag is on
+      if (not FileExists(FParams.Database)) and FParams.CreateSampleData then
+        Self.CreateSampleDatabase;
+
+      if not FileExists(FParams.Database) then
       begin
-        FConnection.Params.DriverID := 'SQLite';
-        FConnection.Params.Database := FParams.Database;
-
-        // Create sample database if it doesn't exist and sample flag is on
-        if (not FileExists(FParams.Database)) and FParams.CreateSampleData then
-          Self.CreateSampleDatabase;
-
-        if not FileExists(FParams.Database) then
-        begin
-          Writeln('Database not found: ' + FParams.Database);
-          Readln;
-          raise Exception.Create('Database not found: ' + FParams.Database);
-        end;
+        Writeln('Database not found: ' + FParams.Database);
+        Readln;
+        raise Exception.Create('Database not found: ' + FParams.Database);
       end;
+    end;
     TDBType.MySQL:
-      begin
-        FConnection.Params.DriverID := 'MySQL';
-        FConnection.Params.Database := FParams.Database;
-        FConnection.Params.Values['Server'] := FParams.Server;
-        FConnection.Params.UserName := FParams.Username;
-        FConnection.Params.Password := FParams.Password;
-        if FParams.Port > 0 then
-          FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
-      end;
+    begin
+      FConnection.Params.DriverID := 'MySQL';
+      FConnection.Params.Database := FParams.Database;
+      FConnection.Params.Values['Server'] := FParams.Server;
+      FConnection.Params.UserName := FParams.Username;
+      FConnection.Params.Password := FParams.Password;
+      if FParams.Port > 0 then
+        FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+    end;
     TDBType.MSSQL:
-      begin
-        FConnection.Params.DriverID := 'MSSQL';
-        FConnection.Params.Database := FParams.Database;
-        FConnection.Params.Values['Server'] := FParams.Server;
-        FConnection.Params.UserName := FParams.Username;
-        FConnection.Params.Password := FParams.Password;
-        if FParams.Port > 0 then
-          FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
-      end;
+    begin
+      FConnection.Params.DriverID := 'MSSQL';
+      FConnection.Params.Database := FParams.Database;
+      FConnection.Params.Values['Server'] := FParams.Server;
+      FConnection.Params.UserName := FParams.Username;
+      FConnection.Params.Password := FParams.Password;
+      if FParams.Port > 0 then
+        FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+    end;
     TDBType.PostgreSQL:
-      begin
-        FConnection.Params.DriverID := 'PG';
-        FConnection.Params.Database := FParams.Database;
-        FConnection.Params.Values['Server'] := FParams.Server;
-        FConnection.Params.UserName := FParams.Username;
-        FConnection.Params.Password := FParams.Password;
-        if FParams.Port > 0 then
-          FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
-      end;
+    begin
+      FConnection.Params.DriverID := 'PG';
+      FConnection.Params.Database := FParams.Database;
+      FConnection.Params.Values['Server'] := FParams.Server;
+      FConnection.Params.UserName := FParams.Username;
+      FConnection.Params.Password := FParams.Password;
+      if FParams.Port > 0 then
+        FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+    end;
     TDBType.Firebird:
+    begin
+      if not FileExists(FParams.Database) then
       begin
-        if not FileExists(FParams.Database) then
-        begin
-          Writeln('Database not found: ' + FParams.Database);
-          Readln;
-          raise Exception.Create('Database not found: ' + FParams.Database);
-        end;
-
-        FConnection.Params.DriverID := 'FB';
-        FConnection.Params.Database := FParams.Database;
-        FConnection.Params.Values['Server'] := FParams.Server;
-        FConnection.Params.UserName := FParams.Username;
-        FConnection.Params.Password := FParams.Password;
-        if FParams.Port > 0 then
-          FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+        Writeln('Database not found: ' + FParams.Database);
+        Readln;
+        raise Exception.Create('Database not found: ' + FParams.Database);
       end;
+
+      FConnection.Params.DriverID := 'FB';
+      FConnection.Params.Database := FParams.Database;
+      FConnection.Params.Values['Server'] := FParams.Server;
+      FConnection.Params.UserName := FParams.Username;
+      FConnection.Params.Password := FParams.Password;
+      if FParams.Port > 0 then
+        FConnection.Params.Values['Port'] := IntToStr(FParams.Port);
+    end;
   end;
 
   FConnection.LoginPrompt := False;
@@ -217,109 +214,123 @@ end;
 
 procedure TDatabaseServer.SetupServer;
 var
-  RunQueryTool, TableInfoTool, CreateTableTool, DropTableTool,
-  InsertDataTool, UpdateDataTool, DeleteDataTool: TTMSMCPTool;
-  SQLProp, TableNameProp, TableNameCreateProp, ColumnDefsProp,
-  TableNameDropProp, TableNameInsertProp, ValuesInsertProp,
-  TableNameUpdateProp, SetValuesUpdateProp, WhereConditionUpdateProp,
-  TableNameDeleteProp, WhereConditionDeleteProp: TTMSMCPToolProperty;
+  LRunQueryTool: TTMSMCPTool;
+  LTableInfoTool: TTMSMCPTool;
+  LCreateTableTool: TTMSMCPTool;
+  LDropTableTool: TTMSMCPTool;
+  LInsertDataTool: TTMSMCPTool;
+  LUpdateDataTool: TTMSMCPTool;
+  LDeleteDataTool: TTMSMCPTool;
+  
+  LSQLProp: TTMSMCPToolProperty;
+  LTableNameProp: TTMSMCPToolProperty; 
+  LTableNameCreateProp: TTMSMCPToolProperty;
+  LColumnDefsProp: TTMSMCPToolProperty;,
+  LTableNameDropProp: TTMSMCPToolProperty;
+  LTableNameInsertProp: TTMSMCPToolProperty;
+  LValuesInsertProp: TTMSMCPToolProperty;,
+  LTableNameUpdateProp: TTMSMCPToolProperty;
+  LSetValuesUpdateProp: TTMSMCPToolProperty;
+  LWhereConditionUpdateProp: TTMSMCPToolProperty;
+  LTableNameDeleteProp: TTMSMCPToolProperty;
+  LWhereConditionDeleteProp: TTMSMCPToolProperty;
 begin
   // Register tools
   FMCPServer.Tools.RegisterTool('run-query', 'Execute an SQL query', RunSQLQuery);
 
   // Define properties for the run-query tool
-  RunQueryTool := FMCPServer.Tools.FindByName('run-query');
-  SQLProp := RunQueryTool.Properties.Add;
-  SQLProp.Name := 'sql';
-  SQLProp.Description := 'SQL query to execute (SELECT queries only)';
-  SQLProp.PropertyType := TTMSMCPToolPropertyType.ptString;
-  SQLProp.Required := True;
+  LRunQueryTool := FMCPServer.Tools.FindByName('run-query');
+  LSQLProp := LRunQueryTool.Properties.Add;
+  LSQLProp.Name := 'sql';
+  LSQLProp.Description := 'SQL query to execute (SELECT queries only)';
+  LSQLProp.PropertyType := TTMSMCPToolPropertyType.ptString;
+  LSQLProp.Required := True;
 
   // Register table list tool
   FMCPServer.Tools.RegisterTool('get-tables', 'Get a list of available tables', GetTableList);
 
   // Register table info tool
   FMCPServer.Tools.RegisterTool('get-table-info', 'Get information about a table', GetTableInfo);
-  TableInfoTool := FMCPServer.Tools.FindByName('get-table-info');
-  TableNameProp := TableInfoTool.Properties.Add;
-  TableNameProp.Name := 'tableName';
-  TableNameProp.Description := 'Name of the table to get information about';
-  TableNameProp.PropertyType := ptString;
-  TableNameProp.Required := True;
+  LTableInfoTool := FMCPServer.Tools.FindByName('get-table-info');
+  LTableNameProp := LTableInfoTool.Properties.Add;
+  LTableNameProp.Name := 'tableName';
+  LTableNameProp.Description := 'Name of the table to get information about';
+  LTableNameProp.PropertyType := ptString;
+  LTableNameProp.Required := True;
 
   FMCPServer.Tools.RegisterTool('create-table', 'Create a new table', CreateTable);
-  CreateTableTool := FMCPServer.Tools.FindByName('create-table');
-  TableNameCreateProp := CreateTableTool.Properties.Add;
-  TableNameCreateProp.Name := 'tableName';
-  TableNameCreateProp.Description := 'Name of the table to create';
-  TableNameCreateProp.PropertyType := ptString;
-  TableNameCreateProp.Required := True;
+  LCreateTableTool := FMCPServer.Tools.FindByName('create-table');
+  LTableNameCreateProp := LCreateTableTool.Properties.Add;
+  LTableNameCreateProp.Name := 'tableName';
+  LTableNameCreateProp.Description := 'Name of the table to create';
+  LTableNameCreateProp.PropertyType := ptString;
+  LTableNameCreateProp.Required := True;
 
-  ColumnDefsProp := CreateTableTool.Properties.Add;
-  ColumnDefsProp.Name := 'columnDefinitions';
-  ColumnDefsProp.Description := 'Column definitions in JSON format [{"name":"col1","type":"TEXT","primary":true},...]';
-  ColumnDefsProp.PropertyType := ptString;
-  ColumnDefsProp.Required := True;
+  LColumnDefsProp := LCreateTableTool.Properties.Add;
+  LColumnDefsProp.Name := 'columnDefinitions';
+  LColumnDefsProp.Description := 'Column definitions in JSON format [{"name":"col1","type":"TEXT","primary":true},...]';
+  LColumnDefsProp.PropertyType := ptString;
+  LColumnDefsProp.Required := True;
 
   // Drop table tool
   FMCPServer.Tools.RegisterTool('drop-table', 'Drop an existing table', DropTable);
-  DropTableTool := FMCPServer.Tools.FindByName('drop-table');
-  TableNameDropProp := DropTableTool.Properties.Add;
-  TableNameDropProp.Name := 'tableName';
-  TableNameDropProp.Description := 'Name of the table to drop';
-  TableNameDropProp.PropertyType := ptString;
-  TableNameDropProp.Required := True;
+  LDropTableTool := FMCPServer.Tools.FindByName('drop-table');
+  LTableNameDropProp := LDropTableTool.Properties.Add;
+  LTableNameDropProp.Name := 'tableName';
+  LTableNameDropProp.Description := 'Name of the table to drop';
+  LTableNameDropProp.PropertyType := ptString;
+  LTableNameDropProp.Required := True;
 
   // Insert data tool
-   FMCPServer.Tools.RegisterTool('insert-data', 'Insert data into a table', InsertData);
-   InsertDataTool := FMCPServer.Tools.FindByName('insert-data');
-  TableNameInsertProp := InsertDataTool.Properties.Add;
-  TableNameInsertProp.Name := 'tableName';
-  TableNameInsertProp.Description := 'Name of the table to insert data into';
-  TableNameInsertProp.PropertyType := ptString;
-  TableNameInsertProp.Required := True;
+  FMCPServer.Tools.RegisterTool('insert-data', 'Insert data into a table', InsertData);
+  LInsertDataTool := FMCPServer.Tools.FindByName('insert-data');
+  LTableNameInsertProp := LInsertDataTool.Properties.Add;
+  LTableNameInsertProp.Name := 'tableName';
+  LTableNameInsertProp.Description := 'Name of the table to insert data into';
+  LTableNameInsertProp.PropertyType := ptString;
+  LTableNameInsertProp.Required := True;
 
-  ValuesInsertProp := InsertDataTool.Properties.Add;
-  ValuesInsertProp.Name := 'values';
-  ValuesInsertProp.Description := 'Values to insert in JSON format {"column1":"value1","column2":value2}';
-  ValuesInsertProp.PropertyType := ptString;
-  ValuesInsertProp.Required := True;
+  LValuesInsertProp := LInsertDataTool.Properties.Add;
+  LValuesInsertProp.Name := 'values';
+  LValuesInsertProp.Description := 'Values to insert in JSON format {"column1":"value1","column2":value2}';
+  LValuesInsertProp.PropertyType := ptString;
+  LValuesInsertProp.Required := True;
 
   // Update data tool
   FMCPServer.Tools.RegisterTool('update-data', 'Update data in a table', UpdateData);
-  UpdateDataTool := FMCPServer.Tools.FindByName('update-data');
-  TableNameUpdateProp := UpdateDataTool.Properties.Add;
-  TableNameUpdateProp.Name := 'tableName';
-  TableNameUpdateProp.Description := 'Name of the table to update data in';
-  TableNameUpdateProp.PropertyType := ptString;
-  TableNameUpdateProp.Required := True;
+  LUpdateDataTool := FMCPServer.Tools.FindByName('update-data');
+  LTableNameUpdateProp := LUpdateDataTool.Properties.Add;
+  LTableNameUpdateProp.Name := 'tableName';
+  LTableNameUpdateProp.Description := 'Name of the table to update data in';
+  LTableNameUpdateProp.PropertyType := ptString;
+  LTableNameUpdateProp.Required := True;
 
-  SetValuesUpdateProp := UpdateDataTool.Properties.Add;
-  SetValuesUpdateProp.Name := 'setValues';
-  SetValuesUpdateProp.Description := 'Values to set in JSON format {"column1":"value1","column2":value2}';
-  SetValuesUpdateProp.PropertyType := ptString;
-  SetValuesUpdateProp.Required := True;
+  LSetValuesUpdateProp := LUpdateDataTool.Properties.Add;
+  LSetValuesUpdateProp.Name := 'setValues';
+  LSetValuesUpdateProp.Description := 'Values to set in JSON format {"column1":"value1","column2":value2}';
+  LSetValuesUpdateProp.PropertyType := ptString;
+  LSetValuesUpdateProp.Required := True;
 
-  WhereConditionUpdateProp := UpdateDataTool.Properties.Add;
-  WhereConditionUpdateProp.Name := 'whereCondition';
-  WhereConditionUpdateProp.Description := 'WHERE condition (e.g., "id = 1")';
-  WhereConditionUpdateProp.PropertyType := ptString;
-  WhereConditionUpdateProp.Required := True;
-
+  LWhereConditionUpdateProp := LUpdateDataTool.Properties.Add;
+  LWhereConditionUpdateProp.Name := 'whereCondition';
+  LWhereConditionUpdateProp.Description := 'WHERE condition (e.g., "id = 1")';
+  LWhereConditionUpdateProp.PropertyType := ptString;
+  LWhereConditionUpdateProp.Required := True;
+                    
   // Delete data tool
   FMCPServer.Tools.RegisterTool('delete-data', 'Delete data from a table', DeleteData);
-  DeleteDataTool := FMCPServer.Tools.FindByName('delete-data');
-  TableNameDeleteProp := DeleteDataTool.Properties.Add;
-  TableNameDeleteProp.Name := 'tableName';
-  TableNameDeleteProp.Description := 'Name of the table to delete data from';
-  TableNameDeleteProp.PropertyType := ptString;
-  TableNameDeleteProp.Required := True;
+  LDeleteDataTool := FMCPServer.Tools.FindByName('delete-data');
+  LTableNameDeleteProp := LDeleteDataTool.Properties.Add;
+  LTableNameDeleteProp.Name := 'tableName';
+  LTableNameDeleteProp.Description := 'Name of the table to delete data from';
+  LTableNameDeleteProp.PropertyType := ptString;
+  LTableNameDeleteProp.Required := True;
 
-  WhereConditionDeleteProp := DeleteDataTool.Properties.Add;
-  WhereConditionDeleteProp.Name := 'whereCondition';
-  WhereConditionDeleteProp.Description := 'WHERE condition (e.g., "id = 1"), leave empty to delete all rows';
-  WhereConditionDeleteProp.PropertyType := ptString;
-  WhereConditionDeleteProp.Required := False;
+  LWhereConditionDeleteProp := LDeleteDataTool.Properties.Add;
+  LWhereConditionDeleteProp.Name := 'whereCondition';
+  LWhereConditionDeleteProp.Description := 'WHERE condition (e.g., "id = 1"), leave empty to delete all rows';
+  LWhereConditionDeleteProp.PropertyType := ptString;
+  LWhereConditionDeleteProp.Required := False;
 end;
 
 procedure TDatabaseServer.Run;
