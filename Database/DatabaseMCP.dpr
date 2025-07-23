@@ -144,7 +144,7 @@ begin
 
         if ParamName = 'type' then
         begin
-              ParamValue := ParamValue.ToLower;
+          ParamValue := ParamValue.ToLower;
           if ParamValue = 'sqlite' then
             Result.DBType := dbtSQLite
           else if ParamValue = 'mysql' then
@@ -187,50 +187,48 @@ begin
   if Result.DBType <> dbtSQLite then
   begin
     if Result.Username = '' then
-    begin
       Halt(1);
-    end;
   end;
 end;
 
 procedure CreateSampleDatabase;
 var
-  Connection: TFDConnection;
+  LConnection: TFDConnection;
 begin
-  Connection := TFDConnection.Create(nil);
+  LConnection := TFDConnection.Create(nil);
   try
-    Connection.Params.DriverID := 'SQLite';
-    Connection.Params.Database := 'demo.db';
-    Connection.LoginPrompt := False;
-    Connection.Connected := True;
+    LConnection.Params.DriverID := 'SQLite';
+    LConnection.Params.Database := 'sample.db';
+    LConnection.LoginPrompt := False;
+    LConnection.Connected := True;
 
     // Create sample tables
-    Connection.ExecSQL('CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, email TEXT, created_at TEXT)');
-    Connection.ExecSQL('CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL, quantity INTEGER)');
-    Connection.ExecSQL('CREATE TABLE orders (id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, ' +
+    LConnection.ExecSQL('CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, email TEXT, created_at TEXT)');
+    LConnection.ExecSQL('CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL, quantity INTEGER)');
+    LConnection.ExecSQL('CREATE TABLE orders (id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, ' +
                        'FOREIGN KEY(customer_id) REFERENCES customers(id))');
-    Connection.ExecSQL('CREATE TABLE order_items (id INTEGER PRIMARY KEY, order_id INTEGER, product_id INTEGER, ' +
+    LConnection.ExecSQL('CREATE TABLE order_items (id INTEGER PRIMARY KEY, order_id INTEGER, product_id INTEGER, ' +
                        'quantity INTEGER, price REAL, ' +
                        'FOREIGN KEY(order_id) REFERENCES orders(id), ' +
                        'FOREIGN KEY(product_id) REFERENCES products(id))');
 
     // Insert sample data
-    Connection.ExecSQL('INSERT INTO customers (name, email, created_at) VALUES ' +
+    LConnection.ExecSQL('INSERT INTO customers (name, email, created_at) VALUES ' +
                        '("John Doe", "john@example.com", "2023-01-15"), ' +
                        '("Jane Smith", "jane@example.com", "2023-02-20"), ' +
                        '("Bob Johnson", "bob@example.com", "2023-03-10")');
 
-    Connection.ExecSQL('INSERT INTO products (name, price, quantity) VALUES ' +
+    LConnection.ExecSQL('INSERT INTO products (name, price, quantity) VALUES ' +
                        '("Laptop", 999.99, 10), ' +
                        '("Smartphone", 699.99, 20), ' +
                        '("Headphones", 149.99, 30)');
 
-    Connection.ExecSQL('INSERT INTO orders (customer_id, order_date) VALUES ' +
+    LConnection.ExecSQL('INSERT INTO orders (customer_id, order_date) VALUES ' +
                        '(1, "2023-04-05"), ' +
                        '(2, "2023-04-10"), ' +
                        '(3, "2023-04-15")');
 
-    Connection.ExecSQL('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ' +
+    LConnection.ExecSQL('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ' +
                        '(1, 1, 1, 999.99), ' +
                        '(1, 3, 1, 149.99), ' +
                        '(2, 2, 2, 699.99), ' +
@@ -238,7 +236,7 @@ begin
                        '(3, 2, 1, 699.99), ' +
                        '(3, 3, 2, 149.99)');
   finally
-    Connection.Free;
+    LConnection.Free;
   end;
 end;
 
@@ -1016,11 +1014,14 @@ begin
 
     if ConnectionParams.DBType in [dbtSQLite, dbtFirebird] then
     begin
-      if not FileExists(ConnectionParams.Database) then
+      if not ConnectionParams.CreateSampleData then
       begin
-        Writeln('Database not found: ' + ConnectionParams.Database);
-        Readln;
-        Exit;
+        if not FileExists(ConnectionParams.Database) then
+        begin
+          Writeln('Database not found: ' + ConnectionParams.Database);
+          Readln;
+          Exit;
+        end;
       end;
     end;
 
