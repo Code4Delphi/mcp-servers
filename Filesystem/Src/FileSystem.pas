@@ -143,7 +143,7 @@ begin
     .Description('Create a folder with the given name')
     .ReturnType(ptString)
     .ExecuteCallback(Self.FolderCreate)
-    .AddProperty
+    .AddProperty     //Crie uma pasta com o nome Teste56
       .Name('NameFolder')
       .Description('Name of the folder to be created')
       .PropertyType(ptString)
