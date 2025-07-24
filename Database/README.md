@@ -16,21 +16,15 @@ The Database Server Demo is a Model Context Protocol (MCP) server implementation
 
 
 ## Parameters:
-  `-type=[sqlite|mysql|mssql|postgres|Firebird]`  Database type (default: sqlite)
-  `-db=<database>`                                Database name or path
-  `-server=<server>`                              Database server address (not needed for SQLite)
-  `-user=<username>`                              Database username (not needed for SQLite)
-  `-pass=<password>`                              Database password (not needed for SQLite)
-  `-port=<port>`                                  Database port (optional)
-  `-sample`                                       Create sample data (only for SQLite)
-  `-help`                                         Show this help
-
-Examples:
-  DatabaseMCP -type=sqlite -db=mydata.db -sample
-  DatabaseMCP -type=mysql -server=localhost -db=mydb -user=root -pass=password
-  DatabaseMCP -type=postgres -server=localhost -db=postgres -user=postgres -pass=password -port=5432
-  DatabaseMCP -type=firebird -db=pathdb -server=localhost -user=sysdba -pass=masterkey -port=0
-
+  - `-type=[sqlite|mysql|mssql|postgres|Firebird]`  Database type (default: sqlite)
+  - `-db=<database>`                                Database name or path
+  - `-server=<server>`                              Database server address (not needed for SQLite)
+  - `-user=<username>`                              Database username (not needed for SQLite)
+  - `-pass=<password>`                              Database password (not needed for SQLite)
+  - `-port=<port>`                                  Database port (optional)
+  - `-sample`                                       Create sample data (only for SQLite)
+  - `-help`                                         Show this help
+  
 ### Examples
 
 **SQLite (File-based database)**
@@ -45,6 +39,12 @@ Creates or opens a SQLite database at the specified path and initializes it with
 
 ```
 DatabaseMCP -type=mysql -server=localhost -db=mydb -user=root -pass=password
+```
+
+**Firebird**
+
+```
+DatabaseMCP -type=firebird -db=pathdb -server=localhost -user=sysdba -pass=masterkey -port=0
 ```
 
 **PostgreSQL**
