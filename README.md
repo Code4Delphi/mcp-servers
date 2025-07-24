@@ -4,8 +4,9 @@ Este repositório reúne exemplos práticos e projetos prontos de MCP Servers cr
 O MCP é um padrão criado pela Anthropic que permite que LLMs (Modelos de Linguagem) descubram e utilizem ferramentas externas de forma padronizada, como acesso a bancos de dados, leitura de arquivos e execução de APIs, tudo isso em tempo real e com baixo acoplamento.
 
 # MCP Servers
+- **[Database](https://github.com/Code4Delphi/mcp-servers/tree/master/Database)** - Expõe funcionalidades para se conectar, consultar e trabalhem com os dados diretamentea um banco de dados (SQLite, MySQL, Firebird, MS SQL ou PostgreSQL).
 - **[FileSystem](https://github.com/Code4Delphi/mcp-servers/tree/master/Filesystem)** - Expõe funcionalidades para manipulação de arquivos e pastas no sistema de arquivos.
-- **[ServerInfoPC](https://github.com/Code4Delphi/mcp-servers/tree/master/ServerInfoPC)** - Expõe informações sobre PC/Windows
+- **[ServerInfoPC](https://github.com/Code4Delphi/mcp-servers/tree/master/ServerInfoPC)** - Expõe informações sobre PC/Windows 
   
 ## 🚀MCP com Delphi na prática
 Quer aprender a usar os milhares de MCP Servers e MCP Clients já disponíveis e, melhor ainda, criar os seus próprios de forma simples com Delphi?
