@@ -1,4 +1,4 @@
-# TMS MCP Database Server Demo
+# Database Server Demo - Delphi
 
 This README explains how to set up and use the TMS MCP Database Server Demo with a client using STDIO transport.
 
