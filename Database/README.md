@@ -14,37 +14,29 @@ The Database Server Demo is a Model Context Protocol (MCP) server implementation
 - Database drivers for your selected database type
 - Database server (except for SQLite, which is file-based)
 
-## Building the Server
 
-1. Open the `DatabaseDemo.dproj` project in your Delphi IDE.
-2. Build the project (Shift+F9 or Run → Build).
-3. The compiled executable will be available in the `Win32\Debug` or `Win32\Release` folder, depending on your configuration.
+## Parameters:
+  `-type=[sqlite|mysql|mssql|postgres|Firebird]`  Database type (default: sqlite)
+  `-db=<database>`                                Database name or path
+  `-server=<server>`                              Database server address (not needed for SQLite)
+  `-user=<username>`                              Database username (not needed for SQLite)
+  `-pass=<password>`                              Database password (not needed for SQLite)
+  `-port=<port>`                                  Database port (optional)
+  `-sample`                                       Create sample data (only for SQLite)
+  `-help`                                         Show this help
 
-## Running the Database Server
-
-The database server accepts several command-line parameters to configure the database connection:
-
-```
-DatabaseDemo [parameters]
-```
-
-**Parameters:**
-
-- `-type=[sqlite|mysql|mssql|postgres]`  Database type (default: sqlite)
-- `-db=<database>`                       Database name or path
-- `-server=<server>`                     Database server address (not needed for SQLite)
-- `-user=<username>`                     Database username (not needed for SQLite)
-- `-pass=<password>`                     Database password (not needed for SQLite)
-- `-port=<port>`                         Database port (optional)
-- `-sample`                              Create sample data (only for SQLite)
-- `-help`                                Show this help
+Examples:
+  DatabaseMCP -type=sqlite -db=mydata.db -sample
+  DatabaseMCP -type=mysql -server=localhost -db=mydb -user=root -pass=password
+  DatabaseMCP -type=postgres -server=localhost -db=postgres -user=postgres -pass=password -port=5432
+  DatabaseMCP -type=firebird -db=pathdb -server=localhost -user=sysdba -pass=masterkey -port=0
 
 ### Examples
 
 **SQLite (File-based database)**
 
 ```
-DatabaseDemo -type=sqlite -db=C:\path\to\mydata.db -sample
+DatabaseMCP -type=sqlite -db=C:\path\to\mydata.db -sample
 ```
 
 Creates or opens a SQLite database at the specified path and initializes it with sample data.
@@ -52,19 +44,19 @@ Creates or opens a SQLite database at the specified path and initializes it with
 **MySQL**
 
 ```
-DatabaseDemo -type=mysql -server=localhost -db=mydb -user=root -pass=password
+DatabaseMCP -type=mysql -server=localhost -db=mydb -user=root -pass=password
 ```
 
 **PostgreSQL**
 
 ```
-DatabaseDemo -type=postgres -server=localhost -db=postgres -user=postgres -pass=password -port=5432
+DatabaseMCP -type=postgres -server=localhost -db=postgres -user=postgres -pass=password -port=5432
 ```
 
 **Microsoft SQL Server**
 
 ```
-DatabaseDemo -type=mssql -server=localhost -db=mydatabase -user=sa -pass=password
+DatabaseMCP -type=mssql -server=localhost -db=mydatabase -user=sa -pass=password
 ```
 
 ## Setting Up a Client
@@ -83,7 +75,7 @@ You can use any MCP client that supports STDIO transport to connect to this serv
 {
   "mcpServers": {
     "database": {
-      "command": "PATH_TO_EXE\\DatabaseDemo.exe",
+      "command": "PATH_TO_EXE\\DatabaseMCP.exe",
       "args": ["-type=sqlite", "-db=C:\\path\\to\\mydata.db", "-sample"]
     }
   }
@@ -104,7 +96,7 @@ Replace `PATH_TO_EXE` with the absolute path to your compiled executable.
 
 2. Run the Inspector with your server:
    ```bash
-   npx @modelcontextprotocol/inspector PATH_TO_EXE\DatabaseDemo.exe -type=sqlite -db=mydata.db -sample
+   npx @modelcontextprotocol/inspector PATH_TO_EXE\DatabaseMCP.exe -type=sqlite -db=mydata.db -sample
    ```
 
 3. Use the Inspector UI to test the database-related tools and view the schema as resources.
