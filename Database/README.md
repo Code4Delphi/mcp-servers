@@ -4,7 +4,7 @@ This README explains how to set up and use the TMS MCP Database Server Demo with
 
 ## Overview
 
-The Database Server Demo is a Model Context Protocol (MCP) server implementation that connects to a database (SQLite, MySQL, MS SQL, or PostgreSQL) and exposes it through MCP tools. This allows AI assistants to query databases and work with the data directly.
+The Database Server Demo is a Model Context Protocol (MCP) server implementation that connects to a database (SQLite, MySQL, Firebird MS SQL, or PostgreSQL) and exposes it through MCP tools. This allows AI assistants to query databases and work with the data directly.
 
 ## Requirements
 
