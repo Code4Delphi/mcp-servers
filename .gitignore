@@ -81,3 +81,4 @@ __recovery/
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
 *.lnk
+Database/Bin/sample.db

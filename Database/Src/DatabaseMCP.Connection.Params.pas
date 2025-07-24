@@ -5,7 +5,8 @@ interface
 uses
   System.SysUtils,
   DatabaseMCP.Utils,
-  DatabaseMCP.Types;
+  DatabaseMCP.Types,
+  TMS.MCP.Helpers;
 
 type
   TConnectionParams = class
@@ -37,14 +38,13 @@ var
   LParamName: string;
   LParamValue: string;
 begin
-  // Set defaults
-  Self.DBType := TDBType.SQLite;
-  Self.Database := 'sample.db';
-  Self.Server := 'localhost';
-  Self.Username := '';
-  Self.Password := '';
-  Self.Port := 0;
-  Self.CreateSampleData := False;
+  FDBType := TDBType.SQLite;
+  FDatabase := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'sample.db';
+  FServer := 'localhost';
+  FUsername := '';
+  FPassword := '';
+  FPort := 0;
+  FCreateSampleData := False;
 
   for I := 1 to ParamCount do
   begin
@@ -57,7 +57,7 @@ begin
     end
     else if LParam = '-sample' then
     begin
-      Self.CreateSampleData := True;
+      FCreateSampleData := True;
     end
     else if LParam.StartsWith('-') then
     begin
@@ -67,44 +67,42 @@ begin
         LParamValue := LParam.Substring(LParam.IndexOf('=') + 1);
 
         if LParamValue.StartsWith('"') and LParamValue.EndsWith('"') then
-        begin
           LParamValue := LParamValue.Substring(1, LParamValue.Length - 2);
-        end;
 
         if LParamName = 'type' then
         begin
           LParamValue := LParamValue.ToLower;
           if LParamValue = 'sqlite' then
-            Self.DBType := TDBType.SQLite
+            FDBType := TDBType.SQLite
           else if LParamValue = 'mysql' then
-            Self.DBType := TDBType.MySQL
+            FDBType := TDBType.MySQL
           else if LParamValue = 'mssql' then
-            Self.DBType := TDBType.MSSQL
+            FDBType := TDBType.MSSQL
           else if LParamValue = 'postgres' then
-            Self.DBType := TDBType.PostgreSQL
+            FDBType := TDBType.PostgreSQL
           else if LParamValue = 'firebird' then
-            Self.DBType := TDBType.Firebird
+            FDBType := TDBType.Firebird
           else
           begin
-            WriteLn('Error: Unknown database type: ' + LParamValue);
             ShowHelp;
+            RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed, 'Error: Unknown database type: ' + LParamValue);
             Halt(1);
           end;
         end
         else if LParamName = 'db' then
-          Self.Database := LParamValue  // Now properly handles spaces
+          FDatabase := LParamValue  // Now properly handles spaces
         else if LParamName = 'server' then
-          Self.Server := LParamValue
+          FServer := LParamValue
         else if LParamName = 'user' then
-          Self.Username := LParamValue
+          FUsername := LParamValue
         else if LParamName = 'pass' then
-          Self.Password := LParamValue
+          FPassword := LParamValue
         else if LParamName = 'port' then
         begin
           try
-            Self.Port := StrToInt(LParamValue);
+            FPort := StrToInt(LParamValue);
           except
-            WriteLn('Error: Invalid port number: ' + LParamValue);
+            RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed, 'Error: Invalid port number: ' + LParamValue);
             Halt(1);
           end;
         end;
@@ -113,9 +111,9 @@ begin
   end;
 
   // Validate parameters
-  if Self.DBType <> TDBType.SQLite then
+  if FDBType <> TDBType.SQLite then
   begin
-    if Self.Username = '' then
+    if FUsername = '' then
       Halt(1);
   end;
 end;

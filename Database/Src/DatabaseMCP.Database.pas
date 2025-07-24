@@ -46,7 +46,7 @@ type
     procedure CreateSampleDatabase;
     procedure Config;
   public
-    constructor Create(const AParams: TConnectionParams);
+    constructor Create;
     destructor Destroy; override;
     // MCP Tool Methods
     function RunSQLQuery(const Args: array of TValue): TValue;
@@ -61,17 +61,27 @@ type
 
 implementation
 
-constructor TDatabase.Create(const AParams: TConnectionParams);
+constructor TDatabase.Create;
 begin
-  FParams := AParams;
+  FParams := TConnectionParams.Create;
+  FConnection := TFDConnection.Create(nil);
+end;
+
+destructor TDatabase.Destroy;
+begin
+  FParams.Free;
+  FConnection.Free;
+  inherited;
 end;
 
 procedure TDatabase.Config;
-begin
-  FConnection := TFDConnection.Create(nil);
+begin     
+  if FConnection.Connected then
+    Exit;  
+    
   case FParams.DBType of
     TDBType.SQLite:
-    begin
+    begin    
       FConnection.Params.DriverID := 'SQLite';
       FConnection.Params.Database := FParams.Database;
 
@@ -138,12 +148,6 @@ begin
   end;
 end;
 
-destructor TDatabase.Destroy;
-begin
-  FConnection.Free;
-  inherited;
-end;
-
 procedure TDatabase.CreateSampleDatabase;
 var
   LConnection: TFDConnection;
@@ -151,7 +155,7 @@ begin
   LConnection := TFDConnection.Create(nil);
   try
     LConnection.Params.DriverID := 'SQLite';
-    LConnection.Params.Database := 'sample.db';
+    LConnection.Params.Database := 'C:\IA\mcp-servers\Database\Bin\sample.db';    
     LConnection.LoginPrompt := False;
     LConnection.Connected := True;
 
@@ -195,102 +199,102 @@ end;
 
 function TDatabase.QuerySafeguard(const ASQL: string): Boolean;
 var
-  UpperSQL: string;
+  LUpperSQL: string;
 begin
   // Enhanced safety check to allow data modification with safeguards
-  UpperSQL := UpperCase(ASQL.Trim);
+  LUpperSQL := UpperCase(ASQL.Trim);
 
   // Allowed operations
-  Result := UpperSQL.StartsWith('SELECT') or
-    UpperSQL.StartsWith('INSERT') or
-    UpperSQL.StartsWith('UPDATE') or
-    UpperSQL.StartsWith('DELETE') or
-    UpperSQL.StartsWith('CREATE TABLE') or
-    UpperSQL.StartsWith('ALTER TABLE') or
-    UpperSQL.StartsWith('DROP TABLE');
+  Result := LUpperSQL.StartsWith('SELECT') or
+    LUpperSQL.StartsWith('INSERT') or
+    LUpperSQL.StartsWith('UPDATE') or
+    LUpperSQL.StartsWith('DELETE') or
+    LUpperSQL.StartsWith('CREATE TABLE') or
+    LUpperSQL.StartsWith('ALTER TABLE') or
+    LUpperSQL.StartsWith('DROP TABLE');
 
   // Block potentially dangerous operations
-  if UpperSQL.Contains('PRAGMA') or UpperSQL.Contains('ATTACH') or UpperSQL.Contains('DETACH') then
+  if LUpperSQL.Contains('PRAGMA') or LUpperSQL.Contains('ATTACH') or LUpperSQL.Contains('DETACH') then
     Result := False;
 end;
 
 function TDatabase.ExecuteQuery(const ASQL: string): TJSONValue;
 var
-  Query: TFDQuery;
-  ResultArray: TJSONArray;
-  RowObj: TJSONObject;
-  Field: TField;
+  LQuery: TFDQuery;
+  LResultArray: TJSONArray;
+  LRowObj: TJSONObject;
+  LField: TField;
   I: Integer;
-  IsSelectQuery: Boolean;
-  ResultObj: TJSONObject;
-  RowsAffected: Integer;
+  LIsSelectQuery: Boolean;
+  LResultObj: TJSONObject;
+  LRowsAffected: Integer;
 begin
   Result := nil;
 
   if not QuerySafeguard(ASQL) then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Query not allowed for security reasons');
 
-  Query := TFDQuery.Create(nil);
+  LQuery := TFDQuery.Create(nil);
   try
-    Query.Connection := FConnection;
-    Query.SQL.Text := ASQL;
+    LQuery.Connection := FConnection;
+    LQuery.SQL.Text := ASQL;
 
-    IsSelectQuery := UpperCase(ASQL.TrimLeft).StartsWith('SELECT');
+    LIsSelectQuery := UpperCase(ASQL.TrimLeft).StartsWith('SELECT');
 
     try
-      if IsSelectQuery then
+      if LIsSelectQuery then
       begin
         // Handle SELECT queries with result sets
-        Query.Open;
-        ResultArray := TJSONArray.Create;
+        LQuery.Open;
+        LResultArray := TJSONArray.Create;
 
-        while not Query.Eof do
+        while not LQuery.Eof do
         begin
-          RowObj := TJSONObject.Create;
+          LRowObj := TJSONObject.Create;
 
-          for I := 0 to Query.FieldCount - 1 do
+          for I := 0 to LQuery.FieldCount - 1 do
           begin
-            Field := Query.Fields[I];
+            LField := LQuery.Fields[I];
 
-            if Field.IsNull then
-              RowObj.AddPair(Field.FieldName, TJSONNull.Create)
+            if LField.IsNull then
+              LRowObj.AddPair(LField.FieldName, TJSONNull.Create)
             else
             begin
-              case Field.DataType of
+              case LField.DataType of
                 ftString, ftWideString, ftMemo, ftWideMemo:
-                  RowObj.AddPair(Field.FieldName, Field.AsString);
+                  LRowObj.AddPair(LField.FieldName, LField.AsString);
                 ftInteger, ftSmallint, ftWord, ftLargeint:
-                  RowObj.AddPair(Field.FieldName, TJSONNumber.Create(Field.AsInteger));
+                  LRowObj.AddPair(LField.FieldName, TJSONNumber.Create(LField.AsInteger));
                 ftFloat, ftCurrency, ftBCD:
-                  RowObj.AddPair(Field.FieldName, TJSONNumber.Create(Field.AsFloat));
+                  LRowObj.AddPair(LField.FieldName, TJSONNumber.Create(LField.AsFloat));
                 ftBoolean:
-                  RowObj.AddPair(Field.FieldName, TJSONBool.Create(Field.AsBoolean));
+                  LRowObj.AddPair(LField.FieldName, TJSONBool.Create(LField.AsBoolean));
                 ftDate, ftDateTime, ftTimeStamp:
-                  RowObj.AddPair(Field.FieldName, FormatDateTime('yyyy-mm-dd hh:nn:ss', Field.AsDateTime));
+                  LRowObj.AddPair(LField.FieldName, FormatDateTime('yyyy-mm-dd hh:nn:ss', LField.AsDateTime));
                 else
-                  RowObj.AddPair(Field.FieldName, Field.AsString);
+                  LRowObj.AddPair(LField.FieldName, LField.AsString);
               end;
             end;
           end;
 
-          ResultArray.Add(RowObj);
-          Query.Next;
+          LResultArray.Add(LRowObj);
+          LQuery.Next;
         end;
 
-        Result := ResultArray;
+        Result := LResultArray;
       end
       else
       begin
         // Handle non-SELECT queries (INSERT, UPDATE, DELETE, CREATE, ALTER, DROP)
-        Query.ExecSQL(ASQL);
+        LQuery.ExecSQL(ASQL);
 
-        RowsAffected := 0;
-        ResultObj := TJSONObject.Create;
-        ResultObj.AddPair('success', TJSONBool.Create(True));
-        ResultObj.AddPair('rowsAffected', TJSONNumber.Create(RowsAffected));
-        ResultObj.AddPair('message', Format('Query executed successfully. Rows affected: %d', [RowsAffected]));
+        LRowsAffected := 0;
+        LResultObj := TJSONObject.Create;
+        LResultObj.AddPair('success', TJSONBool.Create(True));
+        LResultObj.AddPair('rowsAffected', TJSONNumber.Create(LRowsAffected));
+        LResultObj.AddPair('message', Format('Query executed successfully. Rows affected: %d', [LRowsAffected]));
 
-        Result := ResultObj;
+        Result := LResultObj;
       end;
     except
       on E: Exception do
@@ -299,42 +303,42 @@ begin
       end;
     end;
   finally
-    Query.Free;
+    LQuery.Free;
   end;
 end;
 
 function TDatabase.GetTableSchema(const ATableName: string): TJSONValue;
 var
-  Query: TFDQuery;
-  ResultArray: TJSONArray;
-  ColumnObj: TJSONObject;
+  LQuery: TFDQuery;
+  LResultArray: TJSONArray;
+  LColumnObj: TJSONObject;
 begin
   Result := nil;
-  Query := TFDQuery.Create(nil);
+  LQuery := TFDQuery.Create(nil);
   try
-    Query.Connection := FConnection;
+    LQuery.Connection := FConnection;
 
-    // SQLite-specific query to get table schema
-    Query.SQL.Text := 'PRAGMA table_info(' + ATableName + ')';
+    // SQLite-specific LQuery to get table schema
+    LQuery.SQL.Text := 'PRAGMA table_info(' + ATableName + ')';
 
     try
-      Query.Open;
+      LQuery.Open;
 
-      ResultArray := TJSONArray.Create;
+      LResultArray := TJSONArray.Create;
 
-      while not Query.Eof do
+      while not LQuery.Eof do
       begin
-        ColumnObj := TJSONObject.Create;
-        ColumnObj.AddPair('name', Query.FieldByName('name').AsString);
-        ColumnObj.AddPair('type', Query.FieldByName('type').AsString);
-        ColumnObj.AddPair('notnull', TJSONBool.Create(Query.FieldByName('notnull').AsInteger = 1));
-        ColumnObj.AddPair('pk', TJSONBool.Create(Query.FieldByName('pk').AsInteger = 1));
+        LColumnObj := TJSONObject.Create;
+        LColumnObj.AddPair('name', LQuery.FieldByName('name').AsString);
+        LColumnObj.AddPair('type', LQuery.FieldByName('type').AsString);
+        LColumnObj.AddPair('notnull', TJSONBool.Create(LQuery.FieldByName('notnull').AsInteger = 1));
+        LColumnObj.AddPair('pk', TJSONBool.Create(LQuery.FieldByName('pk').AsInteger = 1));
 
-        ResultArray.Add(ColumnObj);
-        Query.Next;
+        LResultArray.Add(LColumnObj);
+        LQuery.Next;
       end;
 
-      Result := ResultArray;
+      Result := LResultArray;
     except
       on E: Exception do
       begin
@@ -342,164 +346,171 @@ begin
       end;
     end;
   finally
-    Query.Free;
+    LQuery.Free;
   end;
 end;
 
 function TDatabase.RunSQLQuery(const Args: array of TValue): TValue;
 var
-  SQL: string;
-  QueryResult: TJSONValue;
+  LSQL: string;
+  LQueryResult: TJSONValue;
 begin
+  Self.Config;
+  
   if Length(Args) < 1 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing SQL parameter');
 
-  SQL := Args[0].AsString;
+  LSQL := Args[0].AsString;
 
-  QueryResult := ExecuteQuery(SQL);
+  LQueryResult := ExecuteQuery(LSQL);
 
-  Result := TValue.From<string>(QueryResult.ToString);
-  QueryResult.Free;
+  Result := TValue.From<string>(LQueryResult.ToString);
+  LQueryResult.Free;
 end;
 
 function TDatabase.GetTableList(const Args: array of TValue): TValue;
 var
-  Query: TFDQuery;
-  Tables: TJSONArray;
+  LQuery: TFDQuery;
+  LTables: TJSONArray;
 begin
   Self.Config;
-  Query := TFDQuery.Create(nil);
+  
+  LQuery := TFDQuery.Create(nil);
   try
-    Query.Connection := FConnection;
+    LQuery.Connection := FConnection;
 
-    // SQLite-specific query to get table list
-    Query.SQL.Text := 'SELECT name FROM sqlite_master WHERE type=''table'' AND name NOT LIKE ''sqlite_%''';
+    // SQLite-specific LQuery to get table list
+    LQuery.SQL.Text := 'SELECT name FROM sqlite_master WHERE type=''table'' AND name NOT LIKE ''sqlite_%''';
     if FConnection.Params.DriverID = 'MySQL' then
-      Query.SQL.Text := Format('SELECT table_name as name FROM information_schema.tables WHERE table_schema = "%s"', [FConnection.Params.Database])
+      LQuery.SQL.Text := Format('SELECT table_name as name FROM information_schema.tables WHERE table_schema = "%s"', [FConnection.Params.Database])
     else if FConnection.Params.DriverID = 'FB' then
-      //Query.SQL.Text := 'SELECT TRIM(RDB$RELATION_NAME) AS table_name FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$VIEW_BLR IS NULL';
-      Query.SQL.Text := 'SELECT RDB$RELATION_NAME as name FROM RDB$RELATIONS  WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_TYPE = 0';
+      //LQuery.SQL.Text := 'SELECT TRIM(RDB$RELATION_NAME) AS table_name FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG = 0 AND RDB$VIEW_BLR IS NULL';
+      LQuery.SQL.Text := 'SELECT RDB$RELATION_NAME as name FROM RDB$RELATIONS  WHERE RDB$SYSTEM_FLAG = 0 AND RDB$RELATION_TYPE = 0';
 
     try
-      Query.Open;
+      LQuery.Open;
 
-      Tables := TJSONArray.Create;
+      LTables := TJSONArray.Create;
 
-      while not Query.Eof do
+      while not LQuery.Eof do
       begin
-        Tables.Add(Query.FieldByName('name').AsString);
-        Query.Next;
+        LTables.Add(LQuery.FieldByName('name').AsString);
+        LQuery.Next;
       end;
 
-      Result := TValue.From<string>(Tables.ToString);
-      Tables.Free;
+      Result := TValue.From<string>(LTables.ToString);
+      LTables.Free;
     except
       on E: Exception do
         RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed, 'Error getting table list: ' + E.Message);
     end;
   finally
-    Query.Free;
+    LQuery.Free;
   end;
 end;
 
 function TDatabase.GetTableInfo(const Args: array of TValue): TValue;
 var
-  TableName: string;
-  Schema: TJSONValue;
+  LTableName: string;
+  LSchema: TJSONValue;
 begin
+  Self.Config;
+  
   if Length(Args) < 1 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing table name parameter');
 
-  TableName := Args[0].AsString;
+  LTableName := Args[0].AsString;
 
-  Schema := GetTableSchema(TableName);
+  LSchema := GetTableSchema(LTableName);
   try
-    Result := TValue.From<string>(Schema.ToString);
+    Result := TValue.From<string>(LSchema.ToString);
   finally
-    Schema.Free;
+    LSchema.Free;
   end;
 end;
 
 function TDatabase.CreateTable(const Args: array of TValue): TValue;
 var
-  TableName: string;
-  ColumnDefs: string;
-  ColDef: string;
-  SQL: string;
-  ColumnDefsObj: TJSONValue;
-  ColumnDefsArray: TJSONArray;
+  LTableName: string;
+  LColumnDefs: string;
+  LColDef: string;
+  LSQL: string;
+  LColumnDefsObj: TJSONValue;
+  LColumnDefsArray: TJSONArray;
   I: Integer;
-  ColumnObj: TJSONObject;
-  ColumnName: string;
-  ColumnType: string;
-  IsPrimary: Boolean;
-  IsNotNull: Boolean;
-  ColumnSQL: TStringList;
-  JSONResult: TJSONValue;
+  LColumnObj: TJSONObject;
+  LColumnName: string;
+  LColumnType: string;
+  LIsPrimary: Boolean;
+  LIsNotNull: Boolean;
+  LColumnSQL: TStringList;
+  LJSONResult: TJSONValue;
 begin
+  Self.Config;
+
   if Length(Args) < 2 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing required parameters');
 
-  TableName := Args[0].AsString;
-  ColumnDefs := Args[1].AsString;
+  LTableName := Args[0].AsString;
+  LColumnDefs := Args[1].AsString;
 
-  if TableName.Trim = '' then
+  if LTableName.Trim = '' then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Table name cannot be empty');
 
   try
-    ColumnDefsObj := TJSONObject.ParseJSONValue(ColumnDefs);
-    if not (ColumnDefsObj is TJSONArray) then
+    LColumnDefsObj := TJSONObject.ParseJSONValue(LColumnDefs);
+    if not (LColumnDefsObj is TJSONArray) then
       RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Column definitions must be a JSON array');
 
-    ColumnDefsArray := TJSONArray(ColumnDefsObj);
-    if ColumnDefsArray.Count = 0 then
+    LColumnDefsArray := TJSONArray(LColumnDefsObj);
+    if LColumnDefsArray.Count = 0 then
       RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'At least one column must be defined');
 
-    ColumnSQL := TStringList.Create;
+    LColumnSQL := TStringList.Create;
     try
-      for I := 0 to ColumnDefsArray.Count - 1 do
+      for I := 0 to LColumnDefsArray.Count - 1 do
       begin
-        if not (ColumnDefsArray.Items[I] is TJSONObject) then
+        if not (LColumnDefsArray.Items[I] is TJSONObject) then
           Continue;
 
-        ColumnObj := TJSONObject(ColumnDefsArray.Items[I]);
+        LColumnObj := TJSONObject(LColumnDefsArray.Items[I]);
 
-        if not ColumnObj.TryGetValue<string>('name', ColumnName) or (ColumnName.Trim = '') then
+        if not LColumnObj.TryGetValue<string>('name', LColumnName) or (LColumnName.Trim = '') then
           Continue;
 
-        if not ColumnObj.TryGetValue<string>('type', ColumnType) then
-          ColumnType := 'TEXT';
+        if not LColumnObj.TryGetValue<string>('type', LColumnType) then
+          LColumnType := 'TEXT';
 
-        if ColumnObj.TryGetValue<Boolean>('primary', IsPrimary) then
+        if LColumnObj.TryGetValue<Boolean>('primary', LIsPrimary) then
           // Skip the primary key part here, will add later
         else
-          IsPrimary := False;
+          LIsPrimary := False;
 
-        if ColumnObj.TryGetValue<Boolean>('notNull', IsNotNull) then
+        if LColumnObj.TryGetValue<Boolean>('notNull', LIsNotNull) then
           // Skip the not null part here, will add later
         else
-          IsNotNull := False;
+          LIsNotNull := False;
 
         // Build column definition
-        ColDef := ColumnName + ' ' + ColumnType;
+        LColDef := LColumnName + ' ' + LColumnType;
 
-        if IsNotNull then
-          ColDef := ColDef + ' NOT NULL';
+        if LIsNotNull then
+          LColDef := LColDef + ' NOT NULL';
 
-        if IsPrimary then
-          ColDef := ColDef + ' PRIMARY KEY';
+        if LIsPrimary then
+          LColDef := LColDef + ' PRIMARY KEY';
 
-        ColumnSQL.Add(ColDef);
+        LColumnSQL.Add(LColDef);
       end;
 
-      SQL := Format('CREATE TABLE %s (%s)',
-        [TableName, ColumnSQL.CommaText.Replace('"', '')]);
+      LSQL := Format('CREATE TABLE %s (%s)',
+        [LTableName, LColumnSQL.CommaText.Replace('"', '')]);
 
-      JSONResult := ExecuteQuery(SQL);
-      Result := TValue.From<string>(JSONResult.ToString);
+      LJSONResult := ExecuteQuery(LSQL);
+      Result := TValue.From<string>(LJSONResult.ToString);
     finally
-      ColumnSQL.Free;
-      ColumnDefsObj.Free;
+      LColumnSQL.Free;
+      LColumnDefsObj.Free;
     end;
   except
     on E: Exception do
@@ -509,104 +520,108 @@ end;
 
 function TDatabase.DropTable(const Args: array of TValue): TValue;
 var
-  TableName: string;
-  SQL: string;
-  JSONResult: TJSONValue;
+  LTableName: string;
+  LSQL: string;
+  LJSONResult: TJSONValue;
 begin
+  Self.Config;
+
   if Length(Args) < 1 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing table name parameter');
 
-  TableName := Args[0].AsString;
+  LTableName := Args[0].AsString;
 
-  if TableName.Trim = '' then
+  if LTableName.Trim = '' then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Table name cannot be empty');
 
-  SQL := Format('DROP TABLE IF EXISTS %s', [TableName]);
+  LSQL := Format('DROP TABLE IF EXISTS %s', [LTableName]);
 
-  JSONResult := ExecuteQuery(SQL);
-  Result := TValue.From<string>(JSONResult.ToString);
+  LJSONResult := ExecuteQuery(LSQL);
+  Result := TValue.From<string>(LJSONResult.ToString);
 end;
 
 function TDatabase.InsertData(const Args: array of TValue): TValue;
 var
-  TableName: string;
-  ValuesJSON: string;
-  ValuesObj: TJSONObject;
-  SQL: string;
-  ColumnsStr: string;
-  ValuesStr: string;
+  LTableName: string;
+  LValuesJSON: string;
+  LValuesObj: TJSONObject;
+  LSQL: string;
+  LColumnsStr: string;
+  LValuesStr: string;
   I: Integer;
-  JSONResult: TJSONValue;
-  Pair: TJSONPair;
-  Query: TFDQuery;
+  LJSONResult: TJSONValue;
+  LPair: TJSONPair;
+  LQuery: TFDQuery;
 begin
+  Self.Config;
+
   if Length(Args) < 2 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing required parameters');
 
-  TableName := Args[0].AsString;
-  ValuesJSON := Args[1].AsString;
+  LTableName := Args[0].AsString;
+  LValuesJSON := Args[1].AsString;
 
-  if TableName.Trim = '' then
+  if LTableName.Trim = '' then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Table name cannot be empty');
 
   try
-    ValuesObj := TJSONObject.ParseJSONValue(ValuesJSON) as TJSONObject;
-    if not Assigned(ValuesObj) or (ValuesObj.Count = 0) then
+    LValuesObj := TJSONObject.ParseJSONValue(LValuesJSON) as TJSONObject;
+    if not Assigned(LValuesObj) or (LValuesObj.Count = 0) then
       RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Values must be a non-empty JSON object');
 
-    Query := TFDQuery.Create(nil);
+    LQuery := TFDQuery.Create(nil);
     try
-      Query.Connection := FConnection;
+      LQuery.Connection := FConnection;
 
       // Build column and values lists
-      ColumnsStr := '';
-      ValuesStr := '';
+      LColumnsStr := '';
+      LValuesStr := '';
 
-      for I := 0 to ValuesObj.Count - 1 do
+      for I := 0 to LValuesObj.Count - 1 do
       begin
-        Pair := ValuesObj.Pairs[I];
+        LPair := LValuesObj.Pairs[I];
 
         if I > 0 then
         begin
-          ColumnsStr := ColumnsStr + ', ';
-          ValuesStr := ValuesStr + ', ';
+          LColumnsStr := LColumnsStr + ', ';
+          LValuesStr := LValuesStr + ', ';
         end;
 
-        ColumnsStr := ColumnsStr + Pair.JsonString.Value;
-        ValuesStr := ValuesStr + ':' + Pair.JsonString.Value;
+        LColumnsStr := LColumnsStr + LPair.JsonString.Value;
+        LValuesStr := LValuesStr + ':' + LPair.JsonString.Value;
       end;
 
-      SQL := Format('INSERT INTO %s (%s) VALUES (%s)',
-        [TableName, ColumnsStr, ValuesStr]);
+      LSQL := Format('INSERT INTO %s (%s) VALUES (%s)',
+        [LTableName, LColumnsStr, LValuesStr]);
 
-      Query.SQL.Text := SQL;
+      LQuery.SQL.Text := LSQL;
 
       // Add parameter values
-      for I := 0 to ValuesObj.Count - 1 do
+      for I := 0 to LValuesObj.Count - 1 do
       begin
-        Pair := ValuesObj.Pairs[I];
+        LPair := LValuesObj.Pairs[I];
 
-        if Pair.JsonValue is TJSONNull then
-          Query.ParamByName(Pair.JsonString.Value).Clear
-        else if Pair.JsonValue is TJSONString then
-          Query.ParamByName(Pair.JsonString.Value).AsString := TJSONString(Pair.JsonValue).Value
-        else if Pair.JsonValue is TJSONNumber then
-          Query.ParamByName(Pair.JsonString.Value).AsFloat := TJSONNumber(Pair.JsonValue).AsDouble
-        else if Pair.JsonValue is TJSONBool then
-          Query.ParamByName(Pair.JsonString.Value).AsBoolean := TJSONBool(Pair.JsonValue).AsBoolean;
+        if LPair.JsonValue is TJSONNull then
+          LQuery.ParamByName(LPair.JsonString.Value).Clear
+        else if LPair.JsonValue is TJSONString then
+          LQuery.ParamByName(LPair.JsonString.Value).AsString := TJSONString(LPair.JsonValue).Value
+        else if LPair.JsonValue is TJSONNumber then
+          LQuery.ParamByName(LPair.JsonString.Value).AsFloat := TJSONNumber(LPair.JsonValue).AsDouble
+        else if LPair.JsonValue is TJSONBool then
+          LQuery.ParamByName(LPair.JsonString.Value).AsBoolean := TJSONBool(LPair.JsonValue).AsBoolean;
       end;
 
-      Query.ExecSQL;
+      LQuery.ExecSQL;
 
-      JSONResult := TJSONObject.Create;
-      TJSONObject(JSONResult).AddPair('success', TJSONBool.Create(True));
-      TJSONObject(JSONResult).AddPair('rowsAffected', TJSONNumber.Create(1));
-      TJSONObject(JSONResult).AddPair('message', 'Data inserted successfully');
+      LJSONResult := TJSONObject.Create;
+      TJSONObject(LJSONResult).AddPair('success', TJSONBool.Create(True));
+      TJSONObject(LJSONResult).AddPair('rowsAffected', TJSONNumber.Create(1));
+      TJSONObject(LJSONResult).AddPair('message', 'Data inserted successfully');
 
-      Result := TValue.From<string>(JSONResult.ToString);
+      Result := TValue.From<string>(LJSONResult.ToString);
     finally
-      Query.Free;
-      ValuesObj.Free;
+      LQuery.Free;
+      LValuesObj.Free;
     end;
   except
     on E: Exception do
@@ -616,84 +631,86 @@ end;
 
 function TDatabase.UpdateData(const Args: array of TValue): TValue;
 var
-  TableName: string;
-  SetValuesJSON: string;
-  WhereCondition: string;
-  SetValuesObj: TJSONObject;
-  SQL, SetClause: string;
+  LTableName: string;
+  LSetValuesJSON: string;
+  LWhereCondition: string;
+  LSetValuesObj: TJSONObject;
+  LSQL, SetClause: string;
   I: Integer;
-  Pair: TJSONPair;
-  Query: TFDQuery;
-  JSONResult: TJSONValue;
-  RowsAffected: integer;
+  LPair: TJSONPair;
+  LQuery: TFDQuery;
+  LJSONResult: TJSONValue;
+  LRowsAffected: integer;
 begin
+  Self.Config;
+
   if Length(Args) < 3 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing required parameters');
 
-  TableName := Args[0].AsString;
-  SetValuesJSON := Args[1].AsString;
-  WhereCondition := Args[2].AsString;
+  LTableName := Args[0].AsString;
+  LSetValuesJSON := Args[1].AsString;
+  LWhereCondition := Args[2].AsString;
 
-  if TableName.Trim = '' then
+  if LTableName.Trim = '' then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Table name cannot be empty');
 
   try
-    SetValuesObj := TJSONObject.ParseJSONValue(SetValuesJSON) as TJSONObject;
-    if not Assigned(SetValuesObj) or (SetValuesObj.Count = 0) then
+    LSetValuesObj := TJSONObject.ParseJSONValue(LSetValuesJSON) as TJSONObject;
+    if not Assigned(LSetValuesObj) or (LSetValuesObj.Count = 0) then
       RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Set values must be a non-empty JSON object');
 
-    Query := TFDQuery.Create(nil);
+    LQuery := TFDQuery.Create(nil);
     try
-      Query.Connection := FConnection;
+      LQuery.Connection := FConnection;
 
       // Build SET clause
       SetClause := '';
 
-      for I := 0 to SetValuesObj.Count - 1 do
+      for I := 0 to LSetValuesObj.Count - 1 do
       begin
-        Pair := SetValuesObj.Pairs[I];
+        LPair := LSetValuesObj.Pairs[I];
 
         if I > 0 then
           SetClause := SetClause + ', ';
 
-        SetClause := SetClause + Pair.JsonString.Value + ' = :' + Pair.JsonString.Value;
+        SetClause := SetClause + LPair.JsonString.Value + ' = :' + LPair.JsonString.Value;
       end;
 
-      // Build SQL statement
-      SQL := Format('UPDATE %s SET %s', [TableName, SetClause]);
+      // Build LSQL statement
+      LSQL := Format('UPDATE %s SET %s', [LTableName, SetClause]);
 
-      if WhereCondition.Trim <> '' then
-        SQL := SQL + ' WHERE ' + WhereCondition;
+      if LWhereCondition.Trim <> '' then
+        LSQL := LSQL + ' WHERE ' + LWhereCondition;
 
-      Query.SQL.Text := SQL;
+      LQuery.SQL.Text := LSQL;
 
       // Add parameter values
-      for I := 0 to SetValuesObj.Count - 1 do
+      for I := 0 to LSetValuesObj.Count - 1 do
       begin
-        Pair := SetValuesObj.Pairs[I];
+        LPair := LSetValuesObj.Pairs[I];
 
-        if Pair.JsonValue is TJSONNull then
-          Query.ParamByName(Pair.JsonString.Value).Clear
-        else if Pair.JsonValue is TJSONString then
-          Query.ParamByName(Pair.JsonString.Value).AsString := TJSONString(Pair.JsonValue).Value
-        else if Pair.JsonValue is TJSONNumber then
-          Query.ParamByName(Pair.JsonString.Value).AsFloat := TJSONNumber(Pair.JsonValue).AsDouble
-        else if Pair.JsonValue is TJSONBool then
-          Query.ParamByName(Pair.JsonString.Value).AsBoolean := TJSONBool(Pair.JsonValue).AsBoolean;
+        if LPair.JsonValue is TJSONNull then
+          LQuery.ParamByName(LPair.JsonString.Value).Clear
+        else if LPair.JsonValue is TJSONString then
+          LQuery.ParamByName(LPair.JsonString.Value).AsString := TJSONString(LPair.JsonValue).Value
+        else if LPair.JsonValue is TJSONNumber then
+          LQuery.ParamByName(LPair.JsonString.Value).AsFloat := TJSONNumber(LPair.JsonValue).AsDouble
+        else if LPair.JsonValue is TJSONBool then
+          LQuery.ParamByName(LPair.JsonString.Value).AsBoolean := TJSONBool(LPair.JsonValue).AsBoolean;
       end;
 
-      RowsAffected := Query.ExecSQL(SQL);
+      LRowsAffected := LQuery.ExecSQL(LSQL);
 
-      JSONResult := nil;
+      LJSONResult := nil;
       Result := TJSONObject.Create;
-      TJSONObject(JSONResult).AddPair('success', TJSONBool.Create(True));
-      TJSONObject(JSONResult).AddPair('rowsAffected', TJSONNumber.Create(RowsAffected));
-      TJSONObject(JSONResult).AddPair('message', Format('Data updated successfully. Rows affected: %d', [RowsAffected]));
+      TJSONObject(LJSONResult).AddPair('success', TJSONBool.Create(True));
+      TJSONObject(LJSONResult).AddPair('rowsAffected', TJSONNumber.Create(LRowsAffected));
+      TJSONObject(LJSONResult).AddPair('message', Format('Data updated successfully. Rows affected: %d', [LRowsAffected]));
 
-      Result := TValue.From<string>(JSONResult.ToString);
+      Result := TValue.From<string>(LJSONResult.ToString);
     finally
-      Query.Free;
-      SetValuesObj.Free;
+      LQuery.Free;
+      LSetValuesObj.Free;
     end;
   except
     on E: Exception do
@@ -705,47 +722,49 @@ end;
 
 function TDatabase.DeleteData(const Args: array of TValue): TValue;
 var
-  TableName: string;
-  WhereCondition: string;
-  SQL: string;
-  JSONResult: TJSONValue;
-  Query: TFDQuery;
-  RowsAffected: integer;
+  LTableName: string;
+  LWhereCondition: string;
+  LSQL: string;
+  LJSONResult: TJSONValue;
+  LQuery: TFDQuery;
+  LRowsAffected: integer;
 begin
+  Self.Config;
+
   if Length(Args) < 1 then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Missing table name parameter');
 
-  TableName := Args[0].AsString;
+  LTableName := Args[0].AsString;
 
   if Length(Args) >= 2 then
-    WhereCondition := Args[1].AsString
+    LWhereCondition := Args[1].AsString
   else
-    WhereCondition := '';
+    LWhereCondition := '';
 
-  if TableName.Trim = '' then
+  if LTableName.Trim = '' then
     RaiseJsonRpcError(TTMSMCPErrorCode.ecInvalidParams, 'Table name cannot be empty');
 
-  // Build SQL statement
-  SQL := Format('DELETE FROM %s', [TableName]);
+  // Build LSQL statement
+  LSQL := Format('DELETE FROM %s', [LTableName]);
 
-  if WhereCondition.Trim <> '' then
-    SQL := SQL + ' WHERE ' + WhereCondition;
+  if LWhereCondition.Trim <> '' then
+    LSQL := LSQL + ' WHERE ' + LWhereCondition;
 
-  Query := TFDQuery.Create(nil);
+  LQuery := TFDQuery.Create(nil);
   try
-    Query.Connection := FConnection;
-    Query.SQL.Text := SQL;
+    LQuery.Connection := FConnection;
+    LQuery.SQL.Text := LSQL;
 
-    RowsAffected := Query.ExecSQL(SQL);
+    LRowsAffected := LQuery.ExecSQL(LSQL);
 
-    JSONResult := TJSONObject.Create;
-    TJSONObject(JSONResult).AddPair('success', TJSONBool.Create(True));
-    TJSONObject(JSONResult).AddPair('rowsAffected', TJSONNumber.Create(RowsAffected));
-    TJSONObject(JSONResult).AddPair('message', Format('Data deleted successfully. Rows affected: %d', [RowsAffected]));
+    LJSONResult := TJSONObject.Create;
+    TJSONObject(LJSONResult).AddPair('success', TJSONBool.Create(True));
+    TJSONObject(LJSONResult).AddPair('rowsAffected', TJSONNumber.Create(LRowsAffected));
+    TJSONObject(LJSONResult).AddPair('message', Format('Data deleted successfully. Rows affected: %d', [LRowsAffected]));
 
-    Result := TValue.From<string>(JSONResult.ToString);
+    Result := TValue.From<string>(LJSONResult.ToString);
   finally
-    Query.Free;
+    LQuery.Free;
   end;
 end;
 

@@ -11,26 +11,19 @@ uses
   DatabaseMCP.Server in 'Src\DatabaseMCP.Server.pas';
 
 var
-  ConnectionParams: TConnectionParams;
   ServerMCP: TServer;
+
 begin
   try
-    ConnectionParams := TConnectionParams.Create;
+    ServerMCP := TServer.Create;
     try
-      ServerMCP := TServer.Create(ConnectionParams);
-      try
-        ServerMCP.SetupServer;
-        ServerMCP.Run;
-      finally
-        ServerMCP.Free;
-      end;
+      ServerMCP.SetupServer;
+      ServerMCP.Run;
     finally
-      ConnectionParams.Free;
+      ServerMCP.Free;
     end;
   except
     on E: Exception do
-    begin
       ExitCode := 1;
-    end;
   end;
 end.

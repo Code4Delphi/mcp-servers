@@ -22,7 +22,7 @@ type
     FMCPServer: TTMSMCPServer;
     FDatabase: TDatabase;
   public
-    constructor Create(const AParams: TConnectionParams);
+    constructor Create;
     destructor Destroy; override;
     procedure SetupServer;
     procedure Run;
@@ -30,13 +30,13 @@ type
 
 implementation
 
-constructor TServer.Create(const AParams: TConnectionParams);
+constructor TServer.Create;
 begin
   FMCPServer := TTMSMCPServer.Create(nil);
-  FMCPServer.ServerName := 'MCPDatabaseServer';
+  FMCPServer.ServerName := 'DatabaseMCPServer';
   FMCPServer.ServerVersion := '1.0.0';
 
-  FDatabase := TDatabase.Create(AParams);
+  FDatabase := TDatabase.Create;
 end;
 
 destructor TServer.Destroy;
