@@ -1,4 +1,4 @@
-unit DatabaseMCP.DatabaseServer;
+unit DatabaseMCP.Database;
 
 interface
 
@@ -31,22 +31,23 @@ uses
   FireDAC.VCLUI.Wait,
   FireDAC.DApt,
   FireDAC.Stan.Param,
-  TMS.MCP.Server,
-  TMS.MCP.Tools,
   TMS.MCP.Helpers,
-  TMS.MCP.Transport.STDIO,
   DatabaseMCP.Types,
   DatabaseMCP.Connection.Params;
 
 type
-  TDatabaseServer = class
+  TDatabase = class
   private
     FConnection: TFDConnection;
-    FMCPServer: TTMSMCPServer;
     FParams: TConnectionParams;
     function ExecuteQuery(const ASQL: string): TJSONValue;
     function GetTableSchema(const ATableName: string): TJSONValue;
     function QuerySafeguard(const ASQL: string): Boolean;
+    procedure CreateSampleDatabase;
+    procedure Config;
+  public
+    constructor Create(const AParams: TConnectionParams);
+    destructor Destroy; override;
     // MCP Tool Methods
     function RunSQLQuery(const Args: array of TValue): TValue;
     function GetTableList(const Args: array of TValue): TValue;
@@ -56,20 +57,17 @@ type
     function InsertData(const Args: array of TValue): TValue;
     function UpdateData(const Args: array of TValue): TValue;
     function DeleteData(const Args: array of TValue): TValue;
-    procedure CreateSampleDatabase;
-  public
-    constructor Create(const AParams: TConnectionParams);
-    destructor Destroy; override;
-    procedure SetupServer;
-    procedure Run;
   end;
 
 implementation
 
-constructor TDatabaseServer.Create(const AParams: TConnectionParams);
+constructor TDatabase.Create(const AParams: TConnectionParams);
 begin
   FParams := AParams;
+end;
 
+procedure TDatabase.Config;
+begin
   FConnection := TFDConnection.Create(nil);
   case FParams.DBType of
     TDBType.SQLite:
@@ -82,11 +80,7 @@ begin
         Self.CreateSampleDatabase;
 
       if not FileExists(FParams.Database) then
-      begin
-        Writeln('Database not found: ' + FParams.Database);
-        Readln;
-        raise Exception.Create('Database not found: ' + FParams.Database);
-      end;
+        RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed, 'Database not found. The path of the bank informed is: ' + FParams.Database);
     end;
     TDBType.MySQL:
     begin
@@ -121,11 +115,7 @@ begin
     TDBType.Firebird:
     begin
       if not FileExists(FParams.Database) then
-      begin
-        Writeln('Database not found: ' + FParams.Database);
-        Readln;
-        raise Exception.Create('Database not found: ' + FParams.Database);
-      end;
+        RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed, 'Database not found. The path of the bank informed is: ' + FParams.Database);
 
       FConnection.Params.DriverID := 'FB';
       FConnection.Params.Database := FParams.Database;
@@ -143,27 +133,18 @@ begin
     FConnection.Connected := True;
   except
     on E: Exception do
-    begin
-      Writeln('Connection failed: ' + E.Message);
-      Readln;
-      raise;
-    end;
+      RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed,
+        'Unable to connect to the database, the following message indicates the possible problem: ' + E.Message);
   end;
-
-  // Initialize MCP server
-  FMCPServer := TTMSMCPServer.Create(nil);
-  FMCPServer.ServerName := 'MCPDatabaseServer';
-  FMCPServer.ServerVersion := '1.0.0';
 end;
 
-destructor TDatabaseServer.Destroy;
+destructor TDatabase.Destroy;
 begin
-  FMCPServer.Free;
   FConnection.Free;
   inherited;
 end;
 
-procedure TDatabaseServer.CreateSampleDatabase;
+procedure TDatabase.CreateSampleDatabase;
 var
   LConnection: TFDConnection;
 begin
@@ -212,134 +193,7 @@ begin
   end;
 end;
 
-procedure TDatabaseServer.SetupServer;
-var
-  LRunQueryTool: TTMSMCPTool;
-  LTableInfoTool: TTMSMCPTool;
-  LCreateTableTool: TTMSMCPTool;
-  LDropTableTool: TTMSMCPTool;
-  LInsertDataTool: TTMSMCPTool;
-  LUpdateDataTool: TTMSMCPTool;
-  LDeleteDataTool: TTMSMCPTool;
-  
-  LSQLProp: TTMSMCPToolProperty;
-  LTableNameProp: TTMSMCPToolProperty; 
-  LTableNameCreateProp: TTMSMCPToolProperty;
-  LColumnDefsProp: TTMSMCPToolProperty;,
-  LTableNameDropProp: TTMSMCPToolProperty;
-  LTableNameInsertProp: TTMSMCPToolProperty;
-  LValuesInsertProp: TTMSMCPToolProperty;,
-  LTableNameUpdateProp: TTMSMCPToolProperty;
-  LSetValuesUpdateProp: TTMSMCPToolProperty;
-  LWhereConditionUpdateProp: TTMSMCPToolProperty;
-  LTableNameDeleteProp: TTMSMCPToolProperty;
-  LWhereConditionDeleteProp: TTMSMCPToolProperty;
-begin
-  // Register tools
-  FMCPServer.Tools.RegisterTool('run-query', 'Execute an SQL query', RunSQLQuery);
-
-  // Define properties for the run-query tool
-  LRunQueryTool := FMCPServer.Tools.FindByName('run-query');
-  LSQLProp := LRunQueryTool.Properties.Add;
-  LSQLProp.Name := 'sql';
-  LSQLProp.Description := 'SQL query to execute (SELECT queries only)';
-  LSQLProp.PropertyType := TTMSMCPToolPropertyType.ptString;
-  LSQLProp.Required := True;
-
-  // Register table list tool
-  FMCPServer.Tools.RegisterTool('get-tables', 'Get a list of available tables', GetTableList);
-
-  // Register table info tool
-  FMCPServer.Tools.RegisterTool('get-table-info', 'Get information about a table', GetTableInfo);
-  LTableInfoTool := FMCPServer.Tools.FindByName('get-table-info');
-  LTableNameProp := LTableInfoTool.Properties.Add;
-  LTableNameProp.Name := 'tableName';
-  LTableNameProp.Description := 'Name of the table to get information about';
-  LTableNameProp.PropertyType := ptString;
-  LTableNameProp.Required := True;
-
-  FMCPServer.Tools.RegisterTool('create-table', 'Create a new table', CreateTable);
-  LCreateTableTool := FMCPServer.Tools.FindByName('create-table');
-  LTableNameCreateProp := LCreateTableTool.Properties.Add;
-  LTableNameCreateProp.Name := 'tableName';
-  LTableNameCreateProp.Description := 'Name of the table to create';
-  LTableNameCreateProp.PropertyType := ptString;
-  LTableNameCreateProp.Required := True;
-
-  LColumnDefsProp := LCreateTableTool.Properties.Add;
-  LColumnDefsProp.Name := 'columnDefinitions';
-  LColumnDefsProp.Description := 'Column definitions in JSON format [{"name":"col1","type":"TEXT","primary":true},...]';
-  LColumnDefsProp.PropertyType := ptString;
-  LColumnDefsProp.Required := True;
-
-  // Drop table tool
-  FMCPServer.Tools.RegisterTool('drop-table', 'Drop an existing table', DropTable);
-  LDropTableTool := FMCPServer.Tools.FindByName('drop-table');
-  LTableNameDropProp := LDropTableTool.Properties.Add;
-  LTableNameDropProp.Name := 'tableName';
-  LTableNameDropProp.Description := 'Name of the table to drop';
-  LTableNameDropProp.PropertyType := ptString;
-  LTableNameDropProp.Required := True;
-
-  // Insert data tool
-  FMCPServer.Tools.RegisterTool('insert-data', 'Insert data into a table', InsertData);
-  LInsertDataTool := FMCPServer.Tools.FindByName('insert-data');
-  LTableNameInsertProp := LInsertDataTool.Properties.Add;
-  LTableNameInsertProp.Name := 'tableName';
-  LTableNameInsertProp.Description := 'Name of the table to insert data into';
-  LTableNameInsertProp.PropertyType := ptString;
-  LTableNameInsertProp.Required := True;
-
-  LValuesInsertProp := LInsertDataTool.Properties.Add;
-  LValuesInsertProp.Name := 'values';
-  LValuesInsertProp.Description := 'Values to insert in JSON format {"column1":"value1","column2":value2}';
-  LValuesInsertProp.PropertyType := ptString;
-  LValuesInsertProp.Required := True;
-
-  // Update data tool
-  FMCPServer.Tools.RegisterTool('update-data', 'Update data in a table', UpdateData);
-  LUpdateDataTool := FMCPServer.Tools.FindByName('update-data');
-  LTableNameUpdateProp := LUpdateDataTool.Properties.Add;
-  LTableNameUpdateProp.Name := 'tableName';
-  LTableNameUpdateProp.Description := 'Name of the table to update data in';
-  LTableNameUpdateProp.PropertyType := ptString;
-  LTableNameUpdateProp.Required := True;
-
-  LSetValuesUpdateProp := LUpdateDataTool.Properties.Add;
-  LSetValuesUpdateProp.Name := 'setValues';
-  LSetValuesUpdateProp.Description := 'Values to set in JSON format {"column1":"value1","column2":value2}';
-  LSetValuesUpdateProp.PropertyType := ptString;
-  LSetValuesUpdateProp.Required := True;
-
-  LWhereConditionUpdateProp := LUpdateDataTool.Properties.Add;
-  LWhereConditionUpdateProp.Name := 'whereCondition';
-  LWhereConditionUpdateProp.Description := 'WHERE condition (e.g., "id = 1")';
-  LWhereConditionUpdateProp.PropertyType := ptString;
-  LWhereConditionUpdateProp.Required := True;
-                    
-  // Delete data tool
-  FMCPServer.Tools.RegisterTool('delete-data', 'Delete data from a table', DeleteData);
-  LDeleteDataTool := FMCPServer.Tools.FindByName('delete-data');
-  LTableNameDeleteProp := LDeleteDataTool.Properties.Add;
-  LTableNameDeleteProp.Name := 'tableName';
-  LTableNameDeleteProp.Description := 'Name of the table to delete data from';
-  LTableNameDeleteProp.PropertyType := ptString;
-  LTableNameDeleteProp.Required := True;
-
-  LWhereConditionDeleteProp := LDeleteDataTool.Properties.Add;
-  LWhereConditionDeleteProp.Name := 'whereCondition';
-  LWhereConditionDeleteProp.Description := 'WHERE condition (e.g., "id = 1"), leave empty to delete all rows';
-  LWhereConditionDeleteProp.PropertyType := ptString;
-  LWhereConditionDeleteProp.Required := False;
-end;
-
-procedure TDatabaseServer.Run;
-begin
-  FMCPServer.Start;
-  FMCPServer.Run;
-end;
-
-function TDatabaseServer.QuerySafeguard(const ASQL: string): Boolean;
+function TDatabase.QuerySafeguard(const ASQL: string): Boolean;
 var
   UpperSQL: string;
 begin
@@ -348,21 +202,19 @@ begin
 
   // Allowed operations
   Result := UpperSQL.StartsWith('SELECT') or
-            UpperSQL.StartsWith('INSERT') or
-            UpperSQL.StartsWith('UPDATE') or
-            UpperSQL.StartsWith('DELETE') or
-            UpperSQL.StartsWith('CREATE TABLE') or
-            UpperSQL.StartsWith('ALTER TABLE') or
-            UpperSQL.StartsWith('DROP TABLE');
+    UpperSQL.StartsWith('INSERT') or
+    UpperSQL.StartsWith('UPDATE') or
+    UpperSQL.StartsWith('DELETE') or
+    UpperSQL.StartsWith('CREATE TABLE') or
+    UpperSQL.StartsWith('ALTER TABLE') or
+    UpperSQL.StartsWith('DROP TABLE');
 
   // Block potentially dangerous operations
-  if UpperSQL.Contains('PRAGMA') or
-     UpperSQL.Contains('ATTACH') or
-     UpperSQL.Contains('DETACH') then
+  if UpperSQL.Contains('PRAGMA') or UpperSQL.Contains('ATTACH') or UpperSQL.Contains('DETACH') then
     Result := False;
 end;
 
-function TDatabaseServer.ExecuteQuery(const ASQL: string): TJSONValue;
+function TDatabase.ExecuteQuery(const ASQL: string): TJSONValue;
 var
   Query: TFDQuery;
   ResultArray: TJSONArray;
@@ -451,7 +303,7 @@ begin
   end;
 end;
 
-function TDatabaseServer.GetTableSchema(const ATableName: string): TJSONValue;
+function TDatabase.GetTableSchema(const ATableName: string): TJSONValue;
 var
   Query: TFDQuery;
   ResultArray: TJSONArray;
@@ -494,7 +346,7 @@ begin
   end;
 end;
 
-function TDatabaseServer.RunSQLQuery(const Args: array of TValue): TValue;
+function TDatabase.RunSQLQuery(const Args: array of TValue): TValue;
 var
   SQL: string;
   QueryResult: TJSONValue;
@@ -510,11 +362,12 @@ begin
   QueryResult.Free;
 end;
 
-function TDatabaseServer.GetTableList(const Args: array of TValue): TValue;
+function TDatabase.GetTableList(const Args: array of TValue): TValue;
 var
   Query: TFDQuery;
   Tables: TJSONArray;
 begin
+  Self.Config;
   Query := TFDQuery.Create(nil);
   try
     Query.Connection := FConnection;
@@ -542,16 +395,14 @@ begin
       Tables.Free;
     except
       on E: Exception do
-      begin
         RaiseJsonRpcError(TTMSMCPErrorCode.ecOperationFailed, 'Error getting table list: ' + E.Message);
-      end;
     end;
   finally
     Query.Free;
   end;
 end;
 
-function TDatabaseServer.GetTableInfo(const Args: array of TValue): TValue;
+function TDatabase.GetTableInfo(const Args: array of TValue): TValue;
 var
   TableName: string;
   Schema: TJSONValue;
@@ -569,7 +420,7 @@ begin
   end;
 end;
 
-function TDatabaseServer.CreateTable(const Args: array of TValue): TValue;
+function TDatabase.CreateTable(const Args: array of TValue): TValue;
 var
   TableName: string;
   ColumnDefs: string;
@@ -656,7 +507,7 @@ begin
   end;
 end;
 
-function TDatabaseServer.DropTable(const Args: array of TValue): TValue;
+function TDatabase.DropTable(const Args: array of TValue): TValue;
 var
   TableName: string;
   SQL: string;
@@ -676,7 +527,7 @@ begin
   Result := TValue.From<string>(JSONResult.ToString);
 end;
 
-function TDatabaseServer.InsertData(const Args: array of TValue): TValue;
+function TDatabase.InsertData(const Args: array of TValue): TValue;
 var
   TableName: string;
   ValuesJSON: string;
@@ -763,7 +614,7 @@ begin
   end;
 end;
 
-function TDatabaseServer.UpdateData(const Args: array of TValue): TValue;
+function TDatabase.UpdateData(const Args: array of TValue): TValue;
 var
   TableName: string;
   SetValuesJSON: string;
@@ -852,7 +703,7 @@ begin
   end;
 end;
 
-function TDatabaseServer.DeleteData(const Args: array of TValue): TValue;
+function TDatabase.DeleteData(const Args: array of TValue): TValue;
 var
   TableName: string;
   WhereCondition: string;

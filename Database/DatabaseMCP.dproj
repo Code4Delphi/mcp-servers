@@ -144,8 +144,9 @@
         </DelphiCompile>
         <DCCReference Include="Src\DatabaseMCP.Connection.Params.pas"/>
         <DCCReference Include="Src\DatabaseMCP.Types.pas"/>
-        <DCCReference Include="Src\DatabaseMCP.DatabaseServer.pas"/>
+        <DCCReference Include="Src\DatabaseMCP.Database.pas"/>
         <DCCReference Include="Src\DatabaseMCP.Utils.pas"/>
+        <DCCReference Include="Src\DatabaseMCP.Server.pas"/>
         <None Include="README.md"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

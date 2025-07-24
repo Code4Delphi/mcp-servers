@@ -6,22 +6,23 @@ uses
   System.SysUtils,
   DatabaseMCP.Connection.Params in 'Src\DatabaseMCP.Connection.Params.pas',
   DatabaseMCP.Types in 'Src\DatabaseMCP.Types.pas',
-  DatabaseMCP.DatabaseServer in 'Src\DatabaseMCP.DatabaseServer.pas',
-  DatabaseMCP.Utils in 'Src\DatabaseMCP.Utils.pas';
+  DatabaseMCP.Database in 'Src\DatabaseMCP.Database.pas',
+  DatabaseMCP.Utils in 'Src\DatabaseMCP.Utils.pas',
+  DatabaseMCP.Server in 'Src\DatabaseMCP.Server.pas';
 
 var
-  DatabaseServer: TDatabaseServer;
   ConnectionParams: TConnectionParams;
+  ServerMCP: TServer;
 begin
   try
     ConnectionParams := TConnectionParams.Create;
     try
-      DatabaseServer := TDatabaseServer.Create(ConnectionParams);
+      ServerMCP := TServer.Create(ConnectionParams);
       try
-        DatabaseServer.SetupServer;
-        DatabaseServer.Run;
+        ServerMCP.SetupServer;
+        ServerMCP.Run;
       finally
-        DatabaseServer.Free;
+        ServerMCP.Free;
       end;
     finally
       ConnectionParams.Free;
