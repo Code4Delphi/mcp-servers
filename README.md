@@ -12,6 +12,7 @@ O MCP é um padrão criado pela Anthropic que permite que LLMs (Modelos de Lingu
 
 ## ✨ Componente utilizado
 - [TMS AI Studio](https://www.tmssoftware.com/site/tmsaistudio.asp)
+- [Documentação](https://download.tmssoftware.com/doc/tmsaistudio/)
   
 ## 🚀MCP com Delphi na prática
 Quer aprender a usar os milhares de MCP Servers e MCP Clients já disponíveis e, melhor ainda, criar os seus próprios de forma simples com Delphi?
