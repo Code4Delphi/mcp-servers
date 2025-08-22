@@ -9,7 +9,8 @@ uses
   System.Rtti,
   TMS.MCP.Server,
   TMS.MCP.Tools,
-  TMS.MCP.Helpers;
+  TMS.MCP.Helpers,
+  TMS.MCP.Transport.StreamableHTTP;
 
 function DateAndTime(const Args: array of TValue): TValue;
 begin
@@ -19,6 +20,7 @@ end;
 var
   MCPServer: TTMSMCPServer;
   MCPTool: TTMSMCPTool;
+  HTTPTransport: TTMSMCPStreamableHTTPTransport;
 
 begin
   try
@@ -26,6 +28,10 @@ begin
     MCPServer := TTMSMCPServer.Create(nil);
     MCPServer.ServerName := 'MCPNow';
     MCPServer.ServerVersion := '1.0.0';
+
+    //CREATE HTTP TRANSPORT WITH CUSTOM ENDPOINT
+    HTTPTransport := TTMSMCPStreamableHTTPTransport.Create(nil, 9090, '/datetime');
+    MCPServer.Transport := HTTPTransport;
 
     //CREATE TOOL
     MCPTool := TTMSMCPTool.CreateBuilder
@@ -38,7 +44,10 @@ begin
     MCPServer.Tools.Add(MCPTool);
 
     MCPServer.Start;
-    MCPServer.Run;
+    //MCPServer.Run;
+    WriteLn(Format('Server running. Port: %d. Endpoint: %s', [HTTPTransport.Port, HTTPTransport.MCPEndpoint]));
+    WriteLn('Press Enter to stop...');
+    ReadLn;
   except
     on E: Exception do
     begin
