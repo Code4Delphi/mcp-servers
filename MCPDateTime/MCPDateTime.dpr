@@ -27,7 +27,7 @@ begin
     MCPServer.ServerName := 'MCPNow';
     MCPServer.ServerVersion := '1.0.0';
 
-    //CREATE TOLL
+    //CREATE TOOL
     MCPTool := TTMSMCPTool.CreateBuilder
       .Name('DateAndTime')
       .Description('Current date and time')
