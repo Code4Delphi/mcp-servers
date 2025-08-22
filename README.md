@@ -15,7 +15,7 @@ Quer aprender a usar os milhares de MCP Servers e MCP Clients já disponíveis e
 
 No canal Code4Delphi, você encontra uma série de vídeos práticos que mostram, passo a passo, como implementar o Model Context Protocol em seus sistemas, conectando LLMs a dados reais e ferramentas externas com facilidade.
 
-## STDIO, SSE e HTTP
+## STDIO, SSE e HTTP (TRANSPORT)
 ### MCP STDIO (Standard Input/Output) (Entrada/Saída Padrão)
 - Comunicação via entrada/saída padrão.
 - Usado em cenários locais ou quando se deseja controlar diretamente a execução do processo.
