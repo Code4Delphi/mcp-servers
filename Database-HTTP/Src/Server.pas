@@ -61,7 +61,7 @@ end;
 
 procedure TServer.OnServerLog(Sender: TObject; const LogMessage: string);
 begin
-  WriteLn(Format('[SERVER] %s', [LogMessage]));
+  WriteLn('[SERVER] ' + LogMessage);
 end;
 
 procedure TServer.Run;
