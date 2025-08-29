@@ -6,6 +6,9 @@ This README explains how to set up and use the TMS MCP Database Server Demo with
 
 The Database Server Demo is a Model Context Protocol (MCP) server implementation that connects to a database (SQLite, MySQL, Firebird, MS SQL, or PostgreSQL) and exposes it through MCP tools. This allows AI assistants to query databases and work with the data directly.
 
+## Vídeo de demonstração
+- [MCP Server Database - IA com acesso ao seu banco](https://www.youtube.com/watch?v=W6KKBMetiyE&list=PLLHSz4dOnnN237tIxJI10E5cy1dgXJxgP)
+
 ## Requirements
 
 - Delphi 10.0 or later
