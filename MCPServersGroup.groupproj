@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{76BD44AA-914D-450E-ABED-0DA9B27F8E3A}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ServerInfoPC\ServerInfoPC.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Database\DatabaseMCP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Database-HTTP\DatabaseMCP_HTTP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Filesystem\FileSystemMCP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="MCPDateTime\MCPDateTime.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ServerInfoPC">
+        <MSBuild Projects="ServerInfoPC\ServerInfoPC.dproj"/>
+    </Target>
+    <Target Name="ServerInfoPC:Clean">
+        <MSBuild Projects="ServerInfoPC\ServerInfoPC.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ServerInfoPC:Make">
+        <MSBuild Projects="ServerInfoPC\ServerInfoPC.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DatabaseMCP">
+        <MSBuild Projects="Database\DatabaseMCP.dproj"/>
+    </Target>
+    <Target Name="DatabaseMCP:Clean">
+        <MSBuild Projects="Database\DatabaseMCP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DatabaseMCP:Make">
+        <MSBuild Projects="Database\DatabaseMCP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DatabaseMCP_HTTP">
+        <MSBuild Projects="Database-HTTP\DatabaseMCP_HTTP.dproj"/>
+    </Target>
+    <Target Name="DatabaseMCP_HTTP:Clean">
+        <MSBuild Projects="Database-HTTP\DatabaseMCP_HTTP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DatabaseMCP_HTTP:Make">
+        <MSBuild Projects="Database-HTTP\DatabaseMCP_HTTP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FileSystemMCP">
+        <MSBuild Projects="Filesystem\FileSystemMCP.dproj"/>
+    </Target>
+    <Target Name="FileSystemMCP:Clean">
+        <MSBuild Projects="Filesystem\FileSystemMCP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FileSystemMCP:Make">
+        <MSBuild Projects="Filesystem\FileSystemMCP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MCPDateTime">
+        <MSBuild Projects="MCPDateTime\MCPDateTime.dproj"/>
+    </Target>
+    <Target Name="MCPDateTime:Clean">
+        <MSBuild Projects="MCPDateTime\MCPDateTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MCPDateTime:Make">
+        <MSBuild Projects="MCPDateTime\MCPDateTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ServerInfoPC;DatabaseMCP;DatabaseMCP_HTTP;FileSystemMCP;MCPDateTime"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ServerInfoPC:Clean;DatabaseMCP:Clean;DatabaseMCP_HTTP:Clean;FileSystemMCP:Clean;MCPDateTime:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ServerInfoPC:Make;DatabaseMCP:Make;DatabaseMCP_HTTP:Make;FileSystemMCP:Make;MCPDateTime:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
