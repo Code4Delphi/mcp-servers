@@ -18,7 +18,7 @@
         <Projects Include="MCPDateTime\MCPDateTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="CEP\CepMCP_RTTI.dproj">
+        <Projects Include="CEP-RTTI\CepMCP_RTTI.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -75,13 +75,13 @@
         <MSBuild Projects="MCPDateTime\MCPDateTime.dproj" Targets="Make"/>
     </Target>
     <Target Name="CepMCP_RTTI">
-        <MSBuild Projects="CEP\CepMCP_RTTI.dproj"/>
+        <MSBuild Projects="CEP-RTTI\CepMCP_RTTI.dproj"/>
     </Target>
     <Target Name="CepMCP_RTTI:Clean">
-        <MSBuild Projects="CEP\CepMCP_RTTI.dproj" Targets="Clean"/>
+        <MSBuild Projects="CEP-RTTI\CepMCP_RTTI.dproj" Targets="Clean"/>
     </Target>
     <Target Name="CepMCP_RTTI:Make">
-        <MSBuild Projects="CEP\CepMCP_RTTI.dproj" Targets="Make"/>
+        <MSBuild Projects="CEP-RTTI\CepMCP_RTTI.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
         <CallTarget Targets="ServerInfoPC;DatabaseMCP;DatabaseMCP_HTTP;FileSystemMCP;MCPDateTime;CepMCP_RTTI"/>
