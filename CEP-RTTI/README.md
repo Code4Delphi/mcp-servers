@@ -103,13 +103,19 @@ Define o tipo do retorno de um método ou de um parâmetro.
 ```delphi
 [TTMSMCPFloat]
 function RetornaTotal([TTMSMCPInteger] AId: Integer): Double;
+```
 
+```delphi
 [TTMSMCPBoolean]
 function Validar([TTMSMCPString] ANome: Integer; [TTMSMCPFloat] AValor: Double): Boolean;
+```
 
+```delphi
 [TTMSMCPString]
 function GetName([TTMSMCPInteger] AId: Integer): string;
+```
 
+```delphi
 [TTMSMCPInteger]
 function GetNumero: Integer;
 ```
