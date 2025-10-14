@@ -15,4 +15,95 @@
 | `TTMSMCPOpenworld`    | Permite que um método aceite parâmetros extras ou desconhecidos sem gerar erros                                                   | ✅       | ❌       |
 | `TTMSMCPOptional`     | Indica que um parâmetro é opcional, podendo ser omitido ou ter valor padrão                                                       | ❌       | ✅       |
 | `TTMSMCPString`, `TTMSMCPFloat`, `TTMSMCPInteger`, `TTMSMCPBoolean` | Define o tipo do retorno de um método ou de um parâmetro                            | ✅       | ✅       |
-| `TTMSMCPCustomType`   | Permite definir um tipo personalizado para o retorno de um método ou para um parâmetro                                            | ✅       | ✅       |
+
+
+## Exemplos
+---
+
+## TTMSMCPTool
+
+Marca um método como uma ferramenta MCP disponível.
+```delphi
+[TTMSMCPTool]
+function GetUsers: TArray<string>;
+```
+---
+
+## TTMSMCPName
+
+Sobrescreve o nome de um método ou parâmetro para fins de exposição ou documentação.
+```delphi
+[TTMSMCPName('ListUsers')]
+function GetAllUsers: TArray<string>;
+```
+
+---
+
+## TTMSMCPDescription
+
+Fornece uma descrição explicativa sobre um método ou parâmetro.
+```delphi
+[TTMSMCPDescription('Retorna todos os usuários ativos')]
+function GetActiveUsers: TArray<string>;
+```
+
+---
+
+## TTMSMCPReadOnly
+
+Indica que o método é somente leitura (não altera dados).
+```delphi
+[TTMSMCPReadOnly]
+function GetSystemStatus: string;
+```
+
+---
+
+## TTMSMCPDestructive
+
+Indica que o método realiza operações destrutivas ou alterações permanentes.
+```delphi
+[TTMSMCPDestructive]
+procedure DeleteUser(const AUserId: string);
+```
+
+---
+
+## TTMSMCPIdempotent
+
+Indica que o método é seguro para repetição sem alterar o resultado após a primeira execução.
+```delphi
+[TTMSMCPIdempotent]
+procedure ActivateUser(const AUserId: string);
+```
+
+---
+
+## TTMSMCPOpenworld
+
+Permite que o método aceite parâmetros extras ou desconhecidos sem gerar erros.
+```delphi
+[TTMSMCPOpenworld]
+procedure UpdateSettings(const Params: array of const);
+```
+
+---
+
+## TTMSMCPOptional
+
+Indica que um parâmetro é opcional.
+```delphi
+procedure SendEmail(const To: string; [TTMSMCPOptional] const CC: string = '');
+```
+
+---
+
+## TTMSMCPString, TTMSMCPFloat, TTMSMCPInteger, TTMSMCPBoolean
+
+Define o tipo do retorno de um método ou de um parâmetro.
+```delphi
+[TTMSMCPString] const AName: string; [TTMSMCPInteger] const AId: Integer; [TTMSMCPBoolean] const AActive: Boolean; [TTMSMCPFloat] const AValue: Double;
+```
+
+---
+
