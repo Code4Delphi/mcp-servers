@@ -100,10 +100,23 @@ procedure SendEmail(const To: string; [TTMSMCPOptional] const CC: string = '');
 
 Defines the return type of a method or parameter. 
 ```delphi
-[TTMSMCPString] const AName: string;
-[TTMSMCPInteger] const AId: Integer;
-[TTMSMCPBoolean] const AActive: Boolean;
-[TTMSMCPFloat] const AValue: Double;
+[TTMSMCPString]
+function GetName([TTMSMCPInteger] AId: Integer): string;
+```
+
+```delphi
+[TTMSMCPFloat]
+function ReturnTotal([TTMSMCPInteger] AId: Integer): Double;
+```
+
+```delphi
+[TTMSMCPInteger]
+function GetNumero: Integer;
+```
+
+```delphi
+[TTMSMCPBoolean]
+function Validate([TTMSMCPString] AName: Integer; [TTMSMCPFloat] AValue: Double): Boolean;
 ```
 
 ---
