@@ -101,10 +101,17 @@ procedure SendEmail(const To: string; [TTMSMCPOptional] const CC: string = '');
 
 Define o tipo do retorno de um método ou de um parâmetro.
 ```delphi
-[TTMSMCPString] const AName: string;
-[TTMSMCPInteger] const AId: Integer;
-[TTMSMCPBoolean] const AActive: Boolean;
-[TTMSMCPFloat] const AValue: Double;
+[TTMSMCPFloat]
+function RetornaTotal([TTMSMCPInteger] AId: Integer): Double;
+
+[TTMSMCPBoolean]
+function Validar([TTMSMCPString] ANome: Integer; [TTMSMCPFloat] AValor: Double): Boolean;
+
+[TTMSMCPString]
+function GetName([TTMSMCPInteger] AId: Integer): string;
+
+[TTMSMCPInteger]
+function GetNumero: Integer;
 ```
 
 ---
