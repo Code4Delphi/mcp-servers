@@ -58,7 +58,7 @@ function GetSystemStatus: string;
 
 ---
 
-## TTMSMCPDestructive
+### TTMSMCPDestructive
 
 Indica que o método realiza operações destrutivas ou alterações permanentes.
 ```delphi
@@ -68,7 +68,7 @@ procedure DeleteUser(const AUserId: string);
 
 ---
 
-## TTMSMCPIdempotent
+### TTMSMCPIdempotent
 
 Indica que o método é seguro para repetição sem alterar o resultado após a primeira execução.
 ```delphi
@@ -78,7 +78,7 @@ procedure ActivateUser(const AUserId: string);
 
 ---
 
-## TTMSMCPOpenworld
+### TTMSMCPOpenworld
 
 Permite que o método aceite parâmetros extras ou desconhecidos sem gerar erros.
 ```delphi
@@ -88,7 +88,7 @@ procedure UpdateSettings(const Params: array of const);
 
 ---
 
-## TTMSMCPOptional
+### TTMSMCPOptional
 
 Indica que um parâmetro é opcional.
 ```delphi
@@ -97,7 +97,7 @@ procedure SendEmail(const To: string; [TTMSMCPOptional] const CC: string = '');
 
 ---
 
-## TTMSMCPString, TTMSMCPFloat, TTMSMCPInteger, TTMSMCPBoolean
+### TTMSMCPString, TTMSMCPFloat, TTMSMCPInteger, TTMSMCPBoolean
 
 Define o tipo do retorno de um método ou de um parâmetro.
 ```delphi
