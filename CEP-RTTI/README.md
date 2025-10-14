@@ -18,9 +18,8 @@
 
 
 ## Exemplos
----
 
-## TTMSMCPTool
+### TTMSMCPTool
 
 Marca um método como uma ferramenta MCP disponível.
 ```delphi
@@ -29,7 +28,7 @@ function GetUsers: TArray<string>;
 ```
 ---
 
-## TTMSMCPName
+### TTMSMCPName
 
 Sobrescreve o nome de um método ou parâmetro para fins de exposição ou documentação.
 ```delphi
@@ -39,7 +38,7 @@ function GetAllUsers: TArray<string>;
 
 ---
 
-## TTMSMCPDescription
+### TTMSMCPDescription
 
 Fornece uma descrição explicativa sobre um método ou parâmetro.
 ```delphi
@@ -49,7 +48,7 @@ function GetActiveUsers: TArray<string>;
 
 ---
 
-## TTMSMCPReadOnly
+### TTMSMCPReadOnly
 
 Indica que o método é somente leitura (não altera dados).
 ```delphi
