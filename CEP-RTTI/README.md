@@ -70,10 +70,10 @@ procedure DeleteUser(const AUserId: Integer);
 
 ### TTMSMCPIdempotent
 
-Indica que o método é seguro para repetição sem alterar o resultado após a primeira execução.
+Indica operações idempotentes que são seguras para serem repetidas (chamadas) várias vezes
 ```delphi
 [TTMSMCPIdempotent]
-procedure ActivateUser(const AUserId: Integer);
+function GetTotal(AProductId: Integer): Double;
 ```
 
 ---
