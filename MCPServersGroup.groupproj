@@ -21,6 +21,9 @@
         <Projects Include="CEP-RTTI\CepMCP_RTTI.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="CRUD-RTTI\CRUD_MCP_RTTI.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -83,14 +86,23 @@
     <Target Name="CepMCP_RTTI:Make">
         <MSBuild Projects="CEP-RTTI\CepMCP_RTTI.dproj" Targets="Make"/>
     </Target>
+    <Target Name="CRUD_MCP_RTTI">
+        <MSBuild Projects="CRUD-RTTI\CRUD_MCP_RTTI.dproj"/>
+    </Target>
+    <Target Name="CRUD_MCP_RTTI:Clean">
+        <MSBuild Projects="CRUD-RTTI\CRUD_MCP_RTTI.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CRUD_MCP_RTTI:Make">
+        <MSBuild Projects="CRUD-RTTI\CRUD_MCP_RTTI.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ServerInfoPC;DatabaseMCP;DatabaseMCP_HTTP;FileSystemMCP;MCPDateTime;CepMCP_RTTI"/>
+        <CallTarget Targets="ServerInfoPC;DatabaseMCP;DatabaseMCP_HTTP;FileSystemMCP;MCPDateTime;CepMCP_RTTI;CRUD_MCP_RTTI"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ServerInfoPC:Clean;DatabaseMCP:Clean;DatabaseMCP_HTTP:Clean;FileSystemMCP:Clean;MCPDateTime:Clean;CepMCP_RTTI:Clean"/>
+        <CallTarget Targets="ServerInfoPC:Clean;DatabaseMCP:Clean;DatabaseMCP_HTTP:Clean;FileSystemMCP:Clean;MCPDateTime:Clean;CepMCP_RTTI:Clean;CRUD_MCP_RTTI:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ServerInfoPC:Make;DatabaseMCP:Make;DatabaseMCP_HTTP:Make;FileSystemMCP:Make;MCPDateTime:Make;CepMCP_RTTI:Make"/>
+        <CallTarget Targets="ServerInfoPC:Make;DatabaseMCP:Make;DatabaseMCP_HTTP:Make;FileSystemMCP:Make;MCPDateTime:Make;CepMCP_RTTI:Make;CRUD_MCP_RTTI:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
