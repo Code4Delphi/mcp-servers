@@ -63,7 +63,7 @@ function GetSystemStatus: string;
 Indica que o método realiza operações destrutivas ou alterações permanentes.
 ```delphi
 [TTMSMCPDestructive]
-procedure DeleteUser(const AUserId: string);
+procedure DeleteUser(const AUserId: Integer);
 ```
 
 ---
@@ -73,7 +73,7 @@ procedure DeleteUser(const AUserId: string);
 Indica que o método é seguro para repetição sem alterar o resultado após a primeira execução.
 ```delphi
 [TTMSMCPIdempotent]
-procedure ActivateUser(const AUserId: string);
+procedure ActivateUser(const AUserId: Integer);
 ```
 
 ---
