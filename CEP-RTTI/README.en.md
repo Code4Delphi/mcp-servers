@@ -69,10 +69,10 @@ procedure DeleteUser(const AUserId: Integer);
 
 ### TTMSMCPIdempotent
 
-Indicates that the method is safe to repeat without changing the result after the first execution. 
-```delphi
+Indicates idempotent operations that are safe to be repeated (called) multiple times.
+```Delphi
 [TTMSMCPIdempotent]
-procedure ActivateUser(const AUserId: Integer);
+function GetTotal(AProductId: Integer): Double;
 ```
 
 ---
