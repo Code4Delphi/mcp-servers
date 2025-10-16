@@ -12,7 +12,10 @@ type
   TCEP = class
   public
     [TTMSMCPTool]
-    function GetEndereco(const ACEP: string): string;
+    [TTMSMCPName('ToolRecuperaEnderecoDeCEP')]
+    [TTMSMCPDescription('Retorna o endereço de um CEP válido')]
+    [TTMSMCPReadOnly]
+    function GetEndereco([TTMSMCPName('ParamCEP')] [TTMSMCPDescription('CEP a ser processado')] const ACEP: string): string;
   end;
 
 implementation
