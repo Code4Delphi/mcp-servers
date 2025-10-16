@@ -13,10 +13,12 @@ type
   public
     [TTMSMCPTool]
     [TTMSMCPDescription('Retorna lista com vendas')]
+    [TTMSMCPReadOnly]
     function List: TArray<string>;
 
     [TTMSMCPTool]
     [TTMSMCPDescription('Retorna dados da venda buscada')]
+    [TTMSMCPString]
     function Get([TTMSMCPDescription('Código da venda a ser retornada')] AId: Integer): string;
   end;
 
