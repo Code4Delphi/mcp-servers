@@ -27,9 +27,9 @@ begin
       MCPServer.Start;
       MCPServer.Run;
     finally
+      MCPServer.Free;
       Vendas.Free;
       Produtos.Free;
-      MCPServer.Free;
     end;
   except
     on E: Exception do
