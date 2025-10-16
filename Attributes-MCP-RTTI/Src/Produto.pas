@@ -11,7 +11,7 @@ type
   TProduto = class
   public
     [TTMSMCPTool]
-    [TTMSMCPName('ListProduto')]
+    [TTMSMCPName('ListaTodosOsProdutos')]
     [TTMSMCPDescription('Retorna todos os produtos ativos')]
     function GetAllProducts: TArray<string>;
 
@@ -40,19 +40,19 @@ type
 
     [TTMSMCPTool]
     [TTMSMCPFloat]
-    function GetPrice(AId: Integer): Double;
+    function GetPrice([TTMSMCPName('NomeDoParamentroCodigo')] AId: Integer): Double;
 
     [TTMSMCPTool]
     [TTMSMCPInteger]
-    function GetSequence(AId: Integer): Integer;
+    function GetSequence([TTMSMCPDescription('Recebe o código do produto')] AId: Integer): Integer;
 
     [TTMSMCPTool]
     [TTMSMCPBoolean]
-    function GetActive([TTMSMCPName('Id do produto')] AId: Integer): Boolean;
+    function GetActive(AId: Integer): Boolean;
 
     [TTMSMCPTool]
     [TTMSMCPFloat]
-    function GetTotal([TTMSMCPInteger] AId: Integer; [TTMSMCPString] ALog: string): Double;
+    function GetTotal([TTMSMCPInteger]AId: Integer; [TTMSMCPString]ALog: string): Double;
   end;
 
 implementation
@@ -82,7 +82,7 @@ begin
 
 end;
 
-procedure TProduto.SaveName(ANome: string; [TTMSMCPOptional] const AObservation: string = '');
+procedure TProduto.SaveName(ANome: string; const AObservation: string = '');
 begin
 
 end;
