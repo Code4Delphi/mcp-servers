@@ -1,4 +1,4 @@
-program RTTI_Classes_Objects;
+program CRUD_RTTI;
 
 {$APPTYPE CONSOLE}
 
@@ -11,23 +11,23 @@ uses
   Vendas in 'Src\Vendas.pas';
 
 var
-  MCPServer: TTMSMCPAttributedServer;
   Produtos: TProdutos;
+  Vendas: TVendas;
+  MCPServer: TTMSMCPAttributedServer;
 begin
   try
-    MCPServer := TTMSMCPAttributedServer.Create(nil);
     Produtos := TProdutos.Create;
+    Vendas := TVendas.Create;
+    MCPServer := TTMSMCPAttributedServer.Create(nil);
     try
-      MCPServer.Targets.AddClass(TVenda);
+      MCPServer.AddObject(Produtos);
+      MCPServer.AddObject(Vendas);
 
-      //MCPServer.AddClass(TVenda);
-      //MCPServer.AddClass(TVenda);
-      //MCPServer.AddObject(Produtos);
-
-      MCPServer.ServerName := 'RTTIClassesObjects';
+      MCPServer.ServerName := 'CrudRTTI';
       MCPServer.Start;
       MCPServer.Run;
     finally
+      Vendas.Free;
       Produtos.Free;
       MCPServer.Free;
     end;
