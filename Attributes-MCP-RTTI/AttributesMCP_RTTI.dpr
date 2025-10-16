@@ -1,4 +1,4 @@
-program Attributes_RTTI;
+program AttributesMCP_RTTI;
 
 {$APPTYPE CONSOLE}
 
