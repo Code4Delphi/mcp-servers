@@ -1,4 +1,4 @@
-program CRUD_MCP_RTTI;
+program Attributes_RTTI;
 
 {$APPTYPE CONSOLE}
 
@@ -15,6 +15,7 @@ var
 begin
   try
     Produto := TProduto.Create;
+    MCPServer := TTMSMCPServerFactory.CreateFromObject(Produto);
     try
       MCPServer.ServerName := 'ManipulaDadosDeProdutos';
       MCPServer.Start;

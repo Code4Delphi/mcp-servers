@@ -21,7 +21,7 @@
         <Projects Include="CEP-RTTI\CepMCP_RTTI.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="CRUD-RTTI\CRUD_MCP_RTTI.dproj">
+        <Projects Include="Attributes-RTTI\Attributes_RTTI.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -86,23 +86,23 @@
     <Target Name="CepMCP_RTTI:Make">
         <MSBuild Projects="CEP-RTTI\CepMCP_RTTI.dproj" Targets="Make"/>
     </Target>
-    <Target Name="CRUD_MCP_RTTI">
-        <MSBuild Projects="CRUD-RTTI\CRUD_MCP_RTTI.dproj"/>
+    <Target Name="Attributes_RTTI">
+        <MSBuild Projects="Attributes-RTTI\Attributes_RTTI.dproj"/>
     </Target>
-    <Target Name="CRUD_MCP_RTTI:Clean">
-        <MSBuild Projects="CRUD-RTTI\CRUD_MCP_RTTI.dproj" Targets="Clean"/>
+    <Target Name="Attributes_RTTI:Clean">
+        <MSBuild Projects="Attributes-RTTI\Attributes_RTTI.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="CRUD_MCP_RTTI:Make">
-        <MSBuild Projects="CRUD-RTTI\CRUD_MCP_RTTI.dproj" Targets="Make"/>
+    <Target Name="Attributes_RTTI:Make">
+        <MSBuild Projects="Attributes-RTTI\Attributes_RTTI.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="ServerInfoPC;DatabaseMCP;DatabaseMCP_HTTP;FileSystemMCP;MCPDateTime;CepMCP_RTTI;CRUD_MCP_RTTI"/>
+        <CallTarget Targets="ServerInfoPC;DatabaseMCP;DatabaseMCP_HTTP;FileSystemMCP;MCPDateTime;CepMCP_RTTI;Attributes_RTTI"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ServerInfoPC:Clean;DatabaseMCP:Clean;DatabaseMCP_HTTP:Clean;FileSystemMCP:Clean;MCPDateTime:Clean;CepMCP_RTTI:Clean;CRUD_MCP_RTTI:Clean"/>
+        <CallTarget Targets="ServerInfoPC:Clean;DatabaseMCP:Clean;DatabaseMCP_HTTP:Clean;FileSystemMCP:Clean;MCPDateTime:Clean;CepMCP_RTTI:Clean;Attributes_RTTI:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ServerInfoPC:Make;DatabaseMCP:Make;DatabaseMCP_HTTP:Make;FileSystemMCP:Make;MCPDateTime:Make;CepMCP_RTTI:Make;CRUD_MCP_RTTI:Make"/>
+        <CallTarget Targets="ServerInfoPC:Make;DatabaseMCP:Make;DatabaseMCP_HTTP:Make;FileSystemMCP:Make;MCPDateTime:Make;CepMCP_RTTI:Make;Attributes_RTTI:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
