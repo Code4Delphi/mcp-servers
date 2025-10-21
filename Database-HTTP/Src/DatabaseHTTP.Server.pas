@@ -59,7 +59,7 @@ end;
 
 procedure TServer.OnServerLog(Sender: TObject; const LogMessage: string);
 begin
-  WriteLn('[SERVER] ' + LogMessage);
+  WriteLn(Format('[SERVER] [%s] %s', [DateTimeToStr(Now) ,LogMessage]));
 end;
 
 procedure TServer.Run;

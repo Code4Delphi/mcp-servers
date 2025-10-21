@@ -24,6 +24,10 @@ begin
     end;
   except
     on E: Exception do
+    begin
+      WriteLn('Error: ' + E.Message);
+      ReadLn;
       ExitCode := 1;
+    end;
   end;
 end.
