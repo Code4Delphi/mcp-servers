@@ -1,4 +1,4 @@
-unit Database;
+unit DatabaseHTTP.Database;
 
 interface
 
@@ -32,8 +32,8 @@ uses
   FireDAC.DApt,
   FireDAC.Stan.Param,
   TMS.MCP.Helpers,
-  Types,
-  Connection.Params;
+  DatabaseHTTP.Types,
+  DatabaseHTTP.Connection.Params;
 
 type
   TDatabase = class

@@ -141,11 +141,11 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Src\Connection.Params.pas"/>
-        <DCCReference Include="Src\Types.pas"/>
-        <DCCReference Include="Src\Database.pas"/>
-        <DCCReference Include="Src\Utils.pas"/>
-        <DCCReference Include="Src\Server.pas"/>
+        <DCCReference Include="Src\DatabaseHTTP.Connection.Params.pas"/>
+        <DCCReference Include="Src\DatabaseHTTP.Types.pas"/>
+        <DCCReference Include="Src\DatabaseHTTP.Database.pas"/>
+        <DCCReference Include="Src\DatabaseHTTP.Utils.pas"/>
+        <DCCReference Include="Src\DatabaseHTTP.Server.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -1,11 +1,11 @@
-unit Connection.Params;
+unit DatabaseHTTP.Connection.Params;
 
 interface
 
 uses
   System.SysUtils,
-  Utils,
-  Types,
+  DatabaseHTTP.Utils,
+  DatabaseHTTP.Types,
   TMS.MCP.Helpers;
 
 type

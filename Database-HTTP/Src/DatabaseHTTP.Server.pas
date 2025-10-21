@@ -1,4 +1,4 @@
-unit Server;
+unit DatabaseHTTP.Server;
 
 interface
 
@@ -11,10 +11,8 @@ uses
   TMS.MCP.Server,
   TMS.MCP.Tools,
   TMS.MCP.Helpers,
-  TMS.MCP.Transport.STDIO,
-  Types,
-  Database,
-  Connection.Params,
+  DatabaseHTTP.Database,
+  DatabaseHTTP.Connection.Params,
   TMS.MCP.Transport.StreamableHTTP;
 
 type
