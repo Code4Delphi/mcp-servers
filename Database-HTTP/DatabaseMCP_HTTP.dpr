@@ -4,11 +4,11 @@ program DatabaseMCP_HTTP;
 
 uses
   System.SysUtils,
-  Connection.Params in 'Src\Connection.Params.pas',
-  Types in 'Src\Types.pas',
-  Database in 'Src\Database.pas',
-  Utils in 'Src\Utils.pas',
-  Server in 'Src\Server.pas';
+  DatabaseHTTP.Connection.Params in 'Src\DatabaseHTTP.Connection.Params.pas',
+  DatabaseHTTP.Types in 'Src\DatabaseHTTP.Types.pas',
+  DatabaseHTTP.Database in 'Src\DatabaseHTTP.Database.pas',
+  DatabaseHTTP.Utils in 'Src\DatabaseHTTP.Utils.pas',
+  DatabaseHTTP.Server in 'Src\DatabaseHTTP.Server.pas';
 
 var
   ServerMCP: TServer;
@@ -24,6 +24,10 @@ begin
     end;
   except
     on E: Exception do
+    begin
+      WriteLn('Error: ' + E.Message);
+      ReadLn;
       ExitCode := 1;
+    end;
   end;
 end.
