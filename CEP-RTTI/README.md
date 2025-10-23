@@ -122,3 +122,14 @@ function Validar([TTMSMCPString] ANome: Integer; [TTMSMCPFloat] AValor: Double):
 
 ---
 
+### Usando vários atributos
+
+```delphi
+[TTMSMCPName('RetornaNomeCliente')]
+[TTMSMCPDescription('Retorna o nome do cliente através do código')]
+[TTMSMCPString]
+[TTMSMCPIdempotent]
+function GetName([TTMSMCPInteger] AId: Integer): string;
+```
+
+---
