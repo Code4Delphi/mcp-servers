@@ -35,26 +35,10 @@ implementation
 
 {$R *.dfm}
 
-const
-  HTTP_PORT = 8080;
-  HTTP_END_POINT = '/filesystem';
-
 procedure TFileSystemHTTPDM.DataModuleCreate(Sender: TObject);
 begin
-  TMSMCPStreamableHTTPTransport1.Port := HTTP_PORT;
-  TMSMCPStreamableHTTPTransport1.MCPEndpoint := HTTP_END_POINT;
-
   FRootDirectory := 'C:\TempIA\';
-  if not ParamStr(1).Trim.IsEmpty then
-    FRootDirectory := IncludeTrailingPathDelimiter(ParamStr(1).Trim);
-
-  if not DirectoryExists(FRootDirectory) then
-   TUtils.FolderCreate(FRootDirectory);
-end;
-
-procedure TFileSystemHTTPDM.TMSMCPServer1Log(Sender: TObject; const LogMessage: string);
-begin
-  WriteLn(Format('[%s] %s', [DateTimeToStr(Now), LogMessage]));
+  TUtils.FolderCreate(FRootDirectory);
 end;
 
 procedure TFileSystemHTTPDM.Run;
@@ -62,10 +46,15 @@ begin
   TMSMCPServer1.Start;
   WriteLn('Server running');
   WriteLn('Name: ' + TMSMCPServer1.ServerName);
-  WriteLn('Port: ' + HTTP_PORT.ToString);
-  WriteLn('Endpoint: ' + HTTP_END_POINT);
+  WriteLn('Port: ' + TMSMCPStreamableHTTPTransport1.Port.ToString);
+  WriteLn('Endpoint: ' + TMSMCPStreamableHTTPTransport1.MCPEndpoint);
   WriteLn('Press Enter to stop...');
   ReadLn;
+end;
+
+procedure TFileSystemHTTPDM.TMSMCPServer1Log(Sender: TObject; const LogMessage: string);
+begin
+  WriteLn(Format('[%s] %s', [DateTimeToStr(Now), LogMessage]));
 end;
 
 function TFileSystemHTTPDM.TMSMCPServer1Tools0Execute(const Args: array of TValue): TValue;
