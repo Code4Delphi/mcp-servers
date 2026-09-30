@@ -101,7 +101,6 @@ object FileSystemHTTPDM: TFileSystemHTTPDM
   object TMSMCPStreamableHTTPTransport1: TTMSMCPStreamableHTTPTransport
     Port = 8080
     MCPEndpoint = '/mcp'
-    ProtocolVersion = '2025-06-18'
     UseSSL = False
     Left = 336
     Top = 64

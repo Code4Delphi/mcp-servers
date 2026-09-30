@@ -6,13 +6,17 @@ program MCPServerOAuth;
 
 uses
   System.SysUtils,
-  MCPServerOAuth.DM in 'MCPServerOAuth.DM.pas' {MCPServerOAuthDM: TDataModule};
+  MCPServerOAuth.DM in 'Src\MCPServerOAuth.DM.pas' {MCPServerOAuthDM: TDataModule};
 
 begin
   try
-    MCPServerOAuthDM := TMCPServerOAuthDM.Create(nil);
+    var LDM := TMCPServerOAuthDM.Create(nil);
   except
     on E: Exception do
-      Writeln(E.ClassName, ': ', E.Message);
+    begin
+      WriteLn('Error: ' + E.Message);
+      ReadLn;
+      ExitCode := 1;
+    end;
   end;
 end.
