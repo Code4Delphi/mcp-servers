@@ -25,7 +25,6 @@ object MCPServerOAuthDM: TMCPServerOAuthDM
     ServerVersion = '1.0.0'
     ServerName = 'FileSystemMCPServer'
     Transport = TMSMCPStreamableHTTPTransport1
-    OnLog = TMSMCPServer1Log
     Left = 168
     Top = 64
   end
@@ -33,6 +32,7 @@ object MCPServerOAuthDM: TMCPServerOAuthDM
     Port = 8081
     MCPEndpoint = '/mcp'
     UseSSL = False
+    OnValidateAccessToken = TMSMCPStreamableHTTPTransport1ValidateAccessToken
     Left = 336
     Top = 64
   end
