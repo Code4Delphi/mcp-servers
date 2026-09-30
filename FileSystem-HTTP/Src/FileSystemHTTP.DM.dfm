@@ -95,7 +95,7 @@ object FileSystemHTTPDM: TFileSystemHTTPDM
     ServerName = 'FileSystemMCPServer'
     Transport = TMSMCPStreamableHTTPTransport1
     OnLog = TMSMCPServer1Log
-    Left = 208
+    Left = 168
     Top = 64
   end
   object TMSMCPStreamableHTTPTransport1: TTMSMCPStreamableHTTPTransport
@@ -103,8 +103,7 @@ object FileSystemHTTPDM: TFileSystemHTTPDM
     MCPEndpoint = '/mcp'
     ProtocolVersion = '2025-06-18'
     UseSSL = False
-    SSLVersion = sslvTLSv1_2
-    Left = 376
+    Left = 336
     Top = 64
   end
 end

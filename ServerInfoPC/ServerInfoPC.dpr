@@ -15,6 +15,7 @@ uses
   TMS.MCP.Transport.SSE,
   FMX.TMSFNCCloudBase;
 
+{$REGION 'Auxiliary functions'}
 function GetWindowsUserName: string;
 var
   LBuffer: array[0..255] of Char;
@@ -36,6 +37,7 @@ begin
 
   Result := TValue.From<string>(GetWindowsUserName + ' - E a senha correta é ' + LSenha);
 end;
+{$ENDREGION}
 
 var
   Server: TTMSMCPServer;

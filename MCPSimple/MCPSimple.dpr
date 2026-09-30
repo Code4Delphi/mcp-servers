@@ -1,4 +1,4 @@
-program FileSystemMCP_HTTP;
+program MCPSimple;
 
 {$APPTYPE CONSOLE}
 
@@ -6,14 +6,13 @@ program FileSystemMCP_HTTP;
 
 uses
   System.SysUtils,
-  FileSystemHTTP.DM in 'Src\FileSystemHTTP.DM.pas' {FileSystemHTTPDM: TDataModule},
-  FileSystemHTTP.Utils in 'Src\FileSystemHTTP.Utils.pas';
+  MCPSimple.DM in 'MCPSimple.DM.pas' {DM: TDataModule};
 
 var
-  DM: TFileSystemHTTPDM;
+  DM: TDM;
 begin
   try
-    DM := TFileSystemHTTPDM.Create(nil);
+    DM := TDM.Create(nil);
     try
       DM.Run;
     finally
