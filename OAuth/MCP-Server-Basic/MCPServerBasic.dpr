@@ -1,4 +1,4 @@
-program MCPServerOAuth;
+program MCPServerBasic;
 
 {$APPTYPE CONSOLE}
 
@@ -6,11 +6,11 @@ program MCPServerOAuth;
 
 uses
   System.SysUtils,
-  MCPServerOAuth.DM in 'Src\MCPServerOAuth.DM.pas' {MCPServerOAuthDM: TDataModule};
+  MCPServerBasic.DM in 'Src\MCPServerBasic.DM.pas' {MCPServerBasicDM: TDataModule};
 
 begin
   try
-    var LDM := TMCPServerOAuthDM.Create(nil);
+    var LDM := TMCPServerBasicDM.Create(nil);
   except
     on E: Exception do
     begin

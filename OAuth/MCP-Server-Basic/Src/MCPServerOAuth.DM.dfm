@@ -1,4 +1,4 @@
-object MCPServerOAuthDM: TMCPServerOAuthDM
+object BasicDM: TBasicDM
   OnCreate = DataModuleCreate
   Height = 389
   Width = 582
