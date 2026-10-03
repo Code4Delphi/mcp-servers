@@ -13,8 +13,7 @@ uses
   TMS.MCP.Helpers,
   TMS.MCP.Transport.STDIO,
   DatabaseMCP.Types,
-  DatabaseMCP.Database,
-  DatabaseMCP.Connection.Params;
+  DatabaseMCP.Database;
 
 type
   TServer = class

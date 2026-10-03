@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3CB62DC2-A911-4595-81B4-DBD95F7FFBA0}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="MCP-Server-Basic\MCPServerBasic.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OAuth Authorization\OAuthAuthorizationServerService.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="MCPServerBasic">
+        <MSBuild Projects="MCP-Server-Basic\MCPServerBasic.dproj"/>
+    </Target>
+    <Target Name="MCPServerBasic:Clean">
+        <MSBuild Projects="MCP-Server-Basic\MCPServerBasic.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MCPServerBasic:Make">
+        <MSBuild Projects="MCP-Server-Basic\MCPServerBasic.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OAuthAuthorizationServerService">
+        <MSBuild Projects="OAuth Authorization\OAuthAuthorizationServerService.dproj"/>
+    </Target>
+    <Target Name="OAuthAuthorizationServerService:Clean">
+        <MSBuild Projects="OAuth Authorization\OAuthAuthorizationServerService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OAuthAuthorizationServerService:Make">
+        <MSBuild Projects="OAuth Authorization\OAuthAuthorizationServerService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="MCPServerBasic;OAuthAuthorizationServerService"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="MCPServerBasic:Clean;OAuthAuthorizationServerService:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="MCPServerBasic:Make;OAuthAuthorizationServerService:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
