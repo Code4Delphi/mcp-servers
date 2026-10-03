@@ -6,12 +6,17 @@ object MCPServerBasicDM: TMCPServerBasicDM
     Tools = <
       item
         Name = 'RetornaCodigoPessoal'
-        Description = 'Retorna c'#243'digo pessoal'
+        Description = 
+          'Use esta ferramenta sempre que o usu'#225'rio pedir o c'#243'digo pessoal ' +
+          'de algu'#233'm, mesmo sem citar MCP, ferramenta ou servidor. N'#227'o inve' +
+          'nte o c'#243'digo. Informe o nome da pessoa em NomeDaPessoa.'
         Properties = <
           item
             Name = 'NomeDaPessoa'
             PropertyType = ptString
-            Description = 'Nome da Pessoa'
+            Description = 
+              'Nome completo da pessoa cujo c'#243'digo pessoal foi pedido, por exem' +
+              'plo Jose Maria.'
           end>
         OnExecute = TMSMCPServer1Tools0Execute
         ReturnType = ptString
@@ -23,7 +28,7 @@ object MCPServerBasicDM: TMCPServerBasicDM
     Resources = <>
     Prompts = <>
     ServerVersion = '1.0.0'
-    ServerName = 'FileSystemMCPServer'
+    ServerName = 'MCPServerBasic'
     Transport = TMSMCPStreamableHTTPTransport1
     Left = 168
     Top = 64

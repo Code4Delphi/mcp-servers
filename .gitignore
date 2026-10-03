@@ -82,3 +82,7 @@ __recovery/
 modules/
 *.lnk
 Database/Bin/sample.db
+OAuth/AGENTS.md
+OAuth/OAuth Authorization/Win32/Debug/OAuthAuthorizationServerService.log
+OAuth/OAuth Authorization/Win32/Debug/OAuthAuthorizationServerService.log
+OAuth/OAuth Authorization/Win32/Debug/OAuthAuthorizationServerService.log

@@ -120,7 +120,7 @@ end;
 function TMCPServerBasicDM.TMSMCPServer1Tools0Execute(const Args: array of TValue): TValue;
 begin
   var LNomePessoal := Args[0].AsString;
-  Result := TValue.From<string>('Código pessoal: ' + DateTimeToStr(Now));
+  Result := TValue.From<string>(Format('Código pessoal de %s é %s ', [LNomePessoal, DateTimeToStr(Now)]));
 end;
 
 end.
